@@ -1,0 +1,4 @@
+script:
+  ./fiji_builder.sh
+cache:
+  dates.txt
