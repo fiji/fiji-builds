@@ -8,10 +8,13 @@ date3=`curl -svX HEAD https://update.fiji.sc/db.xml.gz 2>&1 | grep 'Last-Modifie
 date1="${date1#*, }"
 date2="${date2#*, }"
 date3="${date3#*, }"
-# Convert date to seconds since the epoc
-date1=`date -df '%d %b %Y %H:%M:%S %Z ' "$date1" +%s`
-date2=`date -df '%d %b %Y %H:%M:%S %Z ' "$date2" +%s`
-date3=`date -df '%d %b %Y %H:%M:%S %Z ' "$date3" +%s`
+# Convert date to seconds since the epoc, commented code is MacOS version
+#date1=`date -j -f '%d %b %Y %H:%M:%S %Z ' "$date1" +%s`
+#date2=`date -j -f '%d %b %Y %H:%M:%S %Z ' "$date2" +%s`
+#date3=`date -j -f '%d %b %Y %H:%M:%S %Z ' "$date3" +%s`
+date1=`date --date="$date1" +%s`
+date2=`date --date="$date2" +%s`
+date3=`date --date="$date3" +%s`
 dates=( "$date1" "$date2" "$date3" )
 
 # Read previous dates. The first time there wont be any
