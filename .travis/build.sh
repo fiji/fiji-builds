@@ -1,5 +1,30 @@
 #!/bin/bash
 set -e
+
+if [ "$TRAVIS_SECURE_ENV_VARS" != true \
+	-o "$TRAVIS_PULL_REQUEST" != false \
+	-o "$TRAVIS_BRANCH" != master ]
+then
+	echo "Skipping non-canonical branch."
+	exit
+fi
+
+echo "== Configuring environment ==" &&
+
+# Configure SSH. The file .travis/ssh-rsa-key.enc must contain an
+# encrypted private RSA key for communicating with the destination server.
+mkdir -p "$HOME/.ssh" &&
+openssl aes-256-cbc \
+	-K "$encrypted_9948786e33bf_key" \
+	-iv "$encrypted_9948786e33bf_iv" \
+	-in '.travis/ssh-rsa-key.enc' \
+	-out "$HOME/.ssh/id_rsa" -d &&
+chmod 400 "$HOME/.ssh/id_rsa" &&
+echo "SSH key installed."
+
+echo
+echo "== Generating Fiji bundles =="
+
 # Get last modified date from header
 repos=( "imagej" "sites" "fiji")
 date1=`curl -svX HEAD https://update.imagej.net/db.xml.gz 2>&1 | grep 'Last-Modified:'`
@@ -120,9 +145,12 @@ done)
 
 gzip -d < fiji-nojre.tar.gz | bzip2 -9 > fiji-nojre.tar.bz2
 
+echo
+echo "== Transferring artifacts =="
+
 # transfer artifacts to ImageJ download server
 for f in fiji*.zip fiji*.tar.gz
 do
-  scp -p "$f" downloads.imagej.net:"$f.part" &&
-  ssh downloads.imagej.net "mv -f \"$f.part\" \"fiji-latest/$f\""
+  scp -p "$f" fiji-builds@downloads.imagej.net:"$f.part" &&
+  ssh fiji-builds@downloads.imagej.net "mv -f \"$f.part\" \"latest/$f\""
 done

@@ -1,4 +1,7 @@
-script:
-  ./fiji_builder.sh
+branches:
+  only:
+  - master
+install: true
+script: ".travis/build.sh"
 cache:
   dates.txt
