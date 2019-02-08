@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 # Get last modified date from header
 repos=( "imagej" "sites" "fiji")
 date1=`curl -svX HEAD https://update.imagej.net/db.xml.gz 2>&1 | grep 'Last-Modified:'`
