@@ -9,9 +9,9 @@ date1="${date1#*, }"
 date2="${date2#*, }"
 date3="${date3#*, }"
 # Convert date to seconds since the epoc
-date1=`date -jf '%d %b %Y %H:%M:%S %Z ' "$date1" +%s`
-date2=`date -jf '%d %b %Y %H:%M:%S %Z ' "$date2" +%s`
-date3=`date -jf '%d %b %Y %H:%M:%S %Z ' "$date3" +%s`
+date1=`date -df '%d %b %Y %H:%M:%S %Z ' "$date1" +%s`
+date2=`date -df '%d %b %Y %H:%M:%S %Z ' "$date2" +%s`
+date3=`date -df '%d %b %Y %H:%M:%S %Z ' "$date3" +%s`
 dates=( "$date1" "$date2" "$date3" )
 
 # Read previous dates. The first time there wont be any
@@ -19,9 +19,11 @@ changes=false
 if [ ! -e dates.txt ];
 then 
   # Save the first dates
+  echo "Running for the first time, not dates to compare with, assuming changes exist"
   echo "${dates[0]}" > dates.txt
   echo "${dates[1]}" >> dates.txt
   echo "${dates[2]}" >> dates.txt
+  changes=true
 else
   # Compare to previous cached dates, then save latest dates
   echo "Comparing entries"
