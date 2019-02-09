@@ -20,6 +20,7 @@ openssl aes-256-cbc \
 	-in '.travis/ssh-rsa-key.enc' \
 	-out "$HOME/.ssh/id_rsa" -d &&
 chmod 400 "$HOME/.ssh/id_rsa" &&
+ssh-keyscan -H downloads.imagej.net >> "$HOME/.ssh/known_hosts" &&
 echo "SSH key installed."
 
 echo
