@@ -128,7 +128,7 @@ do
 
   test -d java/$java || (mkdir -p java/$java &&
   	cd java/$java &&
-    wget -r -nH -np -nd https://downloads.imagej.net/java/$java.tar.gz &&
+    curl -fsO https://downloads.imagej.net/java/$java.tar.gz &&
     tar -zxvf $java.tar.gz &&
     rm $java.tar.gz &&
     jre=$(find . -maxdepth 1 -name 'jre*') &&
