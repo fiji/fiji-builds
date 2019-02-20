@@ -152,6 +152,7 @@ echo "== Transferring artifacts =="
 # transfer artifacts to ImageJ download server
 for f in fiji*.zip fiji*.tar.gz
 do
+  echo "Uploading $f"
   scp -p "$f" fiji-builds@downloads.imagej.net:"$f.part" &&
   ssh fiji-builds@downloads.imagej.net "mv -f \"$f.part\" \"latest/$f\""
 done
