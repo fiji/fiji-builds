@@ -136,7 +136,7 @@ do
     if [ "$jdk" ]; then mkdir "$jdk" && mv "$jre" "$jdk/jre"; fi
   )
 
- echo "== Packaging Fiji =="
+  echo "== Generating Fiji bundles =="
   for ext in zip tar.gz
   do
     java -Dij.dir=. -classpath plugins/\*:jars/\* fiji.packaging.Packager \
