@@ -133,7 +133,7 @@ do
     rm $java.tar.gz &&
     jre=$(find . -maxdepth 1 -name 'jre*') &&
     jdk=$(echo "$jre" | sed 's/jre/jdk/') &&
-    mkdir "$jdk" && mv "$jre" "$jdk/jre"
+    if [ "$jdk" ]; then mkdir "$jdk" && mv "$jre" "$jdk/jre"; fi
   )
 
  echo "== Packaging Fiji =="
