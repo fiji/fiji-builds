@@ -109,15 +109,15 @@ date > .timestamp
 (cd Fiji.app &&
 jrunscript ../bootstrap.js update-force-pristine &&
 
-echo "Creating nojre archives"
+echo "== Creating nojre archives =="
 find -type f -newer ../.timestamp > ../updated.txt &&
 for p in fiji-nojre.tar.gz fiji-nojre.zip
 do
   java -Dij.dir=. -classpath plugins/\*:jars/\* fiji.packaging.Packager ../$p
 done &&
 
-echo "Download bundled jre for platform"
-# download bundled JRE for this platform
+echo "== Downloading bundled Java for platform =="
+# download bundled Java for this platform
 for platform in linux32 linux64 win32 win64 macosx
 do
   java=$platform
@@ -136,7 +136,7 @@ do
     mkdir "$jdk" && mv "$jre" "$jdk/jre"
   )
 
- echo "Package jre"
+ echo "== Packaging Fiji =="
   for ext in zip tar.gz
   do
     java -Dij.dir=. -classpath plugins/\*:jars/\* fiji.packaging.Packager \
