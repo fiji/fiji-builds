@@ -24,7 +24,7 @@ ssh-keyscan -H downloads.imagej.net >> "$HOME/.ssh/known_hosts" &&
 echo "SSH key installed."
 
 echo
-echo "== Generating Fiji bundles =="
+echo "== Constructing Fiji installations =="
 
 # Get last modified date from header
 repos=( "imagej" "sites" "fiji")
@@ -136,7 +136,7 @@ do
     if [ "$jdk" ]; then mkdir "$jdk" && mv "$jre" "$jdk/jre"; fi
   )
 
-  echo "== Generating Fiji bundles =="
+  echo "== Generating Fiji archives for $platform =="
   for ext in zip tar.gz
   do
     java -Dij.dir=. -classpath plugins/\*:jars/\* fiji.packaging.Packager \
