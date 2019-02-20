@@ -35,7 +35,7 @@ date3=`curl -svX HEAD https://update.fiji.sc/db.xml.gz 2>&1 | grep 'Last-Modifie
 date1="${date1#*, }"
 date2="${date2#*, }"
 date3="${date3#*, }"
-# Convert date to seconds since the epoc, commented code is MacOS version
+# Convert date to seconds since the epoch, commented code is MacOS version
 #date1=`date -j -f '%d %b %Y %H:%M:%S %Z ' "$date1" +%s`
 #date2=`date -j -f '%d %b %Y %H:%M:%S %Z ' "$date2" +%s`
 #date3=`date -j -f '%d %b %Y %H:%M:%S %Z ' "$date3" +%s`
