@@ -2,11 +2,11 @@
 set -e
 
 if [ "$TRAVIS_SECURE_ENV_VARS" != true \
-	-o "$TRAVIS_PULL_REQUEST" != false \
-	-o "$TRAVIS_BRANCH" != master ]
+  -o "$TRAVIS_PULL_REQUEST" != false \
+  -o "$TRAVIS_BRANCH" != master ]
 then
-	echo "Skipping non-canonical branch."
-	exit
+  echo "Skipping non-canonical branch."
+  exit
 fi
 
 echo "== Configuring environment ==" &&
@@ -15,10 +15,10 @@ echo "== Configuring environment ==" &&
 # encrypted private RSA key for communicating with the destination server.
 mkdir -p "$HOME/.ssh" &&
 openssl aes-256-cbc \
-	-K "$encrypted_9948786e33bf_key" \
-	-iv "$encrypted_9948786e33bf_iv" \
-	-in '.travis/ssh-rsa-key.enc' \
-	-out "$HOME/.ssh/id_rsa" -d &&
+  -K "$encrypted_9948786e33bf_key" \
+  -iv "$encrypted_9948786e33bf_iv" \
+  -in '.travis/ssh-rsa-key.enc' \
+  -out "$HOME/.ssh/id_rsa" -d &&
 chmod 400 "$HOME/.ssh/id_rsa" &&
 ssh-keyscan -H downloads.imagej.net >> "$HOME/.ssh/known_hosts" &&
 echo "SSH key installed."
@@ -47,7 +47,7 @@ dates=( "$date1" "$date2" "$date3" )
 # Read previous dates. The first time there wont be any
 changes=false
 if [ ! -e dates.txt ];
-then 
+then
   # Save the first dates
   echo "Running for the first time, not dates to compare with, assuming changes exist"
   echo "${dates[0]}" > dates.txt
@@ -63,7 +63,7 @@ else
   do
     echo "$line"
     echo "${dates[$i]}"
-	  if [[ $line -lt ${dates[$i]} ]]; 
+    if [[ $line -lt ${dates[$i]} ]];
     then
       echo "There are updates in the ${repos[$i]} site, new distros will be generated"
       changes=true
@@ -127,7 +127,7 @@ do
   esac
 
   test -d java/$java || (mkdir -p java/$java &&
-  	cd java/$java &&
+    cd java/$java &&
     curl -fsO https://downloads.imagej.net/java/$java.tar.gz &&
     tar -zxvf $java.tar.gz &&
     rm $java.tar.gz &&
