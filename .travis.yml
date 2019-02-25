@@ -1,7 +1,14 @@
-branches:
-  only:
-  - master
-install: true
-script: ".travis/build.sh"
-cache:
-  dates.txt
+jobs:
+  include:
+    - stage: build
+      branches:
+      only:
+      - master
+      install: true
+      script: ".travis/build.sh"
+      cache:
+        dates.txt
+    - stage: osxdmg
+        before_script:
+          - pip install dmgbuild
+        script: "./fiji-dmg-builder.sh"
