@@ -46,23 +46,23 @@ dates=( "$date1" "$date2" "$date3" )
 
 # Read previous dates. The first time there wont be any
 changes=false
-if [ ! -e dates.txt ];
+file="./cache/dates.txt"
+if [ ! -e "$file" ];
 then 
   # Save the first dates
   echo "Running for the first time, not dates to compare with, assuming changes exist"
-  echo "${dates[0]}" > dates.txt
-  echo "${dates[1]}" >> dates.txt
-  echo "${dates[2]}" >> dates.txt
+  mkdir -p ./cache
+  echo "${dates[0]}" > "$file"
+  echo "${dates[1]}" >> "$file"
+  echo "${dates[2]}" >> "$file"
   changes=true
 else
   # Compare to previous cached dates, then save latest dates
   echo "Comparing entries"
-  file="dates.txt"
   i=0
   while IFS= read -r line
   do
-    echo "$line"
-    echo "${dates[$i]}"
+    echo "Comparing new $line to previous ${dates[$i]}"
 	  if [[ $line -lt ${dates[$i]} ]]; 
     then
       echo "There are updates in the ${repos[$i]} site, new distros will be generated"
@@ -72,9 +72,9 @@ else
   done <"$file"
 
   # Save the new  dates
-  echo "${dates[0]}" > dates.txt
-  echo "${dates[1]}" >> dates.txt
-  echo "${dates[2]}" >> dates.txt
+  echo "${dates[0]}" > "$file"
+  echo "${dates[1]}" >> "$file"
+  echo "${dates[2]}" >> "$file"
 fi
 
 if [ "$changes" = false ]; then

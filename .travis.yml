@@ -7,7 +7,7 @@ jobs:
       install: true
       script: ".travis/build.sh"
       cache:
-        dates.txt
+        - ./cache
     - stage: osxdmg
         before_script:
           - pip install dmgbuild
