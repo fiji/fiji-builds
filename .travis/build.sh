@@ -2,11 +2,11 @@
 set -e
 
 if [ "$TRAVIS_SECURE_ENV_VARS" != true \
-	-o "$TRAVIS_PULL_REQUEST" != false \
-	-o "$TRAVIS_BRANCH" != master ]
+  -o "$TRAVIS_PULL_REQUEST" != false \
+  -o "$TRAVIS_BRANCH" != master ]
 then
-	echo "Skipping non-canonical branch."
-	exit
+  echo "Skipping non-canonical branch."
+  exit
 fi
 
 echo "== Configuring environment ==" &&
@@ -15,16 +15,16 @@ echo "== Configuring environment ==" &&
 # encrypted private RSA key for communicating with the destination server.
 mkdir -p "$HOME/.ssh" &&
 openssl aes-256-cbc \
-	-K "$encrypted_9948786e33bf_key" \
-	-iv "$encrypted_9948786e33bf_iv" \
-	-in '.travis/ssh-rsa-key.enc' \
-	-out "$HOME/.ssh/id_rsa" -d &&
+  -K "$encrypted_9948786e33bf_key" \
+  -iv "$encrypted_9948786e33bf_iv" \
+  -in '.travis/ssh-rsa-key.enc' \
+  -out "$HOME/.ssh/id_rsa" -d &&
 chmod 400 "$HOME/.ssh/id_rsa" &&
 ssh-keyscan -H downloads.imagej.net >> "$HOME/.ssh/known_hosts" &&
 echo "SSH key installed."
 
 echo
-echo "== Generating Fiji bundles =="
+echo "== Constructing Fiji installations =="
 
 # Get last modified date from header
 repos=( "imagej" "sites" "fiji")
@@ -35,7 +35,7 @@ date3=`curl -svX HEAD https://update.fiji.sc/db.xml.gz 2>&1 | grep 'Last-Modifie
 date1="${date1#*, }"
 date2="${date2#*, }"
 date3="${date3#*, }"
-# Convert date to seconds since the epoc, commented code is MacOS version
+# Convert date to seconds since the epoch, commented code is MacOS version
 #date1=`date -j -f '%d %b %Y %H:%M:%S %Z ' "$date1" +%s`
 #date2=`date -j -f '%d %b %Y %H:%M:%S %Z ' "$date2" +%s`
 #date3=`date -j -f '%d %b %Y %H:%M:%S %Z ' "$date3" +%s`
@@ -109,15 +109,15 @@ date > .timestamp
 (cd Fiji.app &&
 jrunscript ../bootstrap.js update-force-pristine &&
 
-echo "Creating nojre archives"
+echo "== Creating nojre archives =="
 find -type f -newer ../.timestamp > ../updated.txt &&
 for p in fiji-nojre.tar.gz fiji-nojre.zip
 do
   java -Dij.dir=. -classpath plugins/\*:jars/\* fiji.packaging.Packager ../$p
 done &&
 
-echo "Download bundled jre for platform"
-# download bundled JRE for this platform
+echo "== Downloading bundled Java for platform =="
+# download bundled Java for this platform
 for platform in linux32 linux64 win32 win64 macosx
 do
   java=$platform
@@ -127,16 +127,16 @@ do
   esac
 
   test -d java/$java || (mkdir -p java/$java &&
-  	cd java/$java &&
+    cd java/$java &&
     curl -fsO https://downloads.imagej.net/java/$java.tar.gz &&
     tar -zxvf $java.tar.gz &&
     rm $java.tar.gz &&
     jre=$(find . -maxdepth 1 -name 'jre*') &&
     jdk=$(echo "$jre" | sed 's/jre/jdk/') &&
-    mkdir "$jdk" && mv "$jre" "$jdk/jre"
+    if [ "$jdk" ]; then mkdir "$jdk" && mv "$jre" "$jdk/jre"; fi
   )
 
- echo "Package jre"
+  echo "== Generating Fiji archives for $platform =="
   for ext in zip tar.gz
   do
     java -Dij.dir=. -classpath plugins/\*:jars/\* fiji.packaging.Packager \
@@ -152,6 +152,7 @@ echo "== Transferring artifacts =="
 # transfer artifacts to ImageJ download server
 for f in fiji*.zip fiji*.tar.gz
 do
+  echo "Uploading $f"
   scp -p "$f" fiji-builds@downloads.imagej.net:"$f.part" &&
   ssh fiji-builds@downloads.imagej.net "mv -f \"$f.part\" \"latest/$f\""
 done

@@ -2,8 +2,8 @@ jobs:
   include:
     - stage: build
       branches:
-      only:
-      - master
+        only:
+        - master
       install: true
       script: ".travis/build.sh"
       cache:
