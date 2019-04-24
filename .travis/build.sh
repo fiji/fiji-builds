@@ -107,7 +107,7 @@ date > .timestamp
 
 # this is the real update
 (cd Fiji.app &&
-jrunscript ../bootstrap.js update-force-pristine &&
+DEBUG=1 jrunscript ../bootstrap.js update-force-pristine &&
 
 echo "== Creating nojre archives =="
 find -type f -newer ../.timestamp > ../updated.txt &&
