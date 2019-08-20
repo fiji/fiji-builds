@@ -159,9 +159,13 @@ echo
 echo "== Transferring artifacts =="
 
 # transfer artifacts to ImageJ download server
+# and copy them to the archive
+timestamp=`date "+%Y%m%d-%H%M"`
 for f in fiji*.zip fiji*.tar.gz
 do
   echo "Uploading $f"
   scp -p "$f" fiji-builds@downloads.imagej.net:"$f.part" &&
   ssh fiji-builds@downloads.imagej.net "mv -f \"$f.part\" \"latest/$f\""
+  ssh fiji-builds@downloads.imagej.net "mkdir -p \"archive/$timestamp\""
+  ssh fiji-builds@downloads.imagej.net "cp \"latest/$f\" \"archive/$timestamp/$f\""
 done
