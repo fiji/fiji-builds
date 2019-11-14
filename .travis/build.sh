@@ -166,4 +166,9 @@ do
   echo "Uploading $f"
   scp -p "$f" fiji-builds@downloads.imagej.net:"$f.part" &&
   ssh fiji-builds@downloads.imagej.net "mv -f '$f.part' 'latest/$f' && mkdir -p 'archive/$timestamp' && ln 'latest/$f' 'archive/$timestamp/$f'"
+  if [ $? -ne 0 ]
+  then
+    echo "[ERROR] UPLOAD FAILED for file $f"
+    exit 1
+  fi
 done
