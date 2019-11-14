@@ -165,7 +165,5 @@ for f in fiji*.zip fiji*.tar.gz
 do
   echo "Uploading $f"
   scp -p "$f" fiji-builds@downloads.imagej.net:"$f.part" &&
-  ssh fiji-builds@downloads.imagej.net "mv -f \"$f.part\" \"latest/$f\""
-  ssh fiji-builds@downloads.imagej.net "mkdir -p \"archive/$timestamp\""
-  ssh fiji-builds@downloads.imagej.net "cp \"latest/$f\" \"archive/$timestamp/$f\""
+  ssh fiji-builds@downloads.imagej.net "mv -f '$f.part' 'latest/$f' && mkdir -p 'archive/$timestamp' && ln 'latest/$f' 'archive/$timestamp/$f'"
 done
