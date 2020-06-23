@@ -70,11 +70,6 @@ else
     fi
     i=$i+1
   done <"$file"
-
-  # Save the new  dates
-  echo "${dates[0]}" > "$file"
-  echo "${dates[1]}" >> "$file"
-  echo "${dates[2]}" >> "$file"
 fi
 
 if [ "$changes" = false ]; then
@@ -172,3 +167,8 @@ do
     exit 1
   fi
 done
+
+# Finally since everything worked OK save the new dates
+echo "${dates[0]}" > "$file"
+echo "${dates[1]}" >> "$file"
+echo "${dates[2]}" >> "$file"
