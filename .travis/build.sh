@@ -38,9 +38,6 @@ then
   # Save the first dates
   echo "Running for the first time, not dates to compare with, assuming changes exist"
   mkdir -p ./cache
-  echo "${dates[0]}" > "$file"
-  echo "${dates[1]}" >> "$file"
-  echo "${dates[2]}" >> "$file"
   changes=true
 else
   # Compare to previous cached dates, then save latest dates
