@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import biplist
 import os.path
+import os
 
 #
 # Example settings file for dmgbuild
@@ -83,7 +84,8 @@ icon_locations = {
 # Other color components may be expressed either in the range 0 to 1, or
 # as percentages (e.g. 60% is equivalent to 0.6).
 #background = 'builtin-arrow'
-background = 'resources/install-fiji.jpg'
+pwd = os.environ['TRAVIS_BUILD_DIR']
+background = pwd + '/.travis/resources/install-fiji.jpg'
 show_status_bar = False
 show_tab_view = False
 show_toolbar = False

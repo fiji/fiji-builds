@@ -89,7 +89,7 @@ echo "== Performing second update ==" &&
 DEBUG=1 jrunscript ../bootstrap.js update-force-pristine &&
 
 echo "== Creating nojre archives =="
-find -type f -newer ../.timestamp > ../updated.txt &&
+find . -type f -newer ../.timestamp > ../updated.txt &&
 for p in fiji-nojre.tar.gz fiji-nojre.zip
 do
   java -Dij.dir=. -classpath plugins/\*:jars/\* fiji.packaging.Packager ../$p
