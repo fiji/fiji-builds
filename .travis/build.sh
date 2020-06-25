@@ -129,9 +129,9 @@ gzip -d < fiji-nojre.tar.gz | bzip2 -9 > fiji-nojre.tar.bz2
 
 echo
 echo "== Create dmg =="
-tmp="$(mktemp -d tmp)"
-tar -xf fiji-macosx.tar.gz -C tmp
 
+mkdir -p tmp 
+tar -xf fiji-macosx.tar.gz -C tmp
 # We use https://pypi.org/project/dmgbuild/ to create the dmg.
 dmgbuild -s settings.py "Fiji" fiji-macosx.dmg
 
