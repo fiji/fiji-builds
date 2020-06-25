@@ -1,14 +1,6 @@
 #!/bin/bash
 set -e
 
-if [ "$TRAVIS_SECURE_ENV_VARS" != true \
-  -o "$TRAVIS_PULL_REQUEST" != false \
-  -o "$TRAVIS_BRANCH" != master ]
-then
-  echo "Skipping non-canonical branch."
-  exit
-fi
-
 echo "== Configuring environment ==" &&
 
 # Configure SSH. The file .travis/ssh-rsa-key.enc must contain an
@@ -159,6 +151,14 @@ dmgbuild -s settings.py "Fiji" fiji-macosx.dmg
 
 echo
 echo "== Transferring artifacts =="
+
+if [ "$TRAVIS_SECURE_ENV_VARS" != true \
+  -o "$TRAVIS_PULL_REQUEST" != false \
+  -o "$TRAVIS_BRANCH" != master ]
+then
+  echo "Skipping deployment for non-canonical branch."
+  exit
+fi
 
 # transfer artifacts to ImageJ download server
 # and copy them to the archive
