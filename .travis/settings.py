@@ -17,7 +17,7 @@ import os.path
 
 # .. Useful stuff ..............................................................
 
-# application = defines.get('app', './tmp/Fiji.app')
+application = defines.get('app')
 appname = os.path.basename(application)
 
 def icon_from_app(app_path):
