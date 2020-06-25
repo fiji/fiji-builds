@@ -48,7 +48,7 @@ dates=( "$date1" "$date2" "$date3" )
 changes=false
 file="./cache/dates.txt"
 if [ ! -e "$file" ];
-then 
+then
   # Save the first dates
   echo "Running for the first time, not dates to compare with, assuming changes exist"
   mkdir -p ./cache
@@ -63,18 +63,13 @@ else
   while IFS= read -r line
   do
     echo "Comparing new $line to previous ${dates[$i]}"
-	  if [[ $line -lt ${dates[$i]} ]]; 
+	  if [[ $line -lt ${dates[$i]} ]];
     then
       echo "There are updates in the ${repos[$i]} site, new distros will be generated"
       changes=true
     fi
     i=$i+1
   done <"$file"
-
-  # Save the new  dates
-  echo "${dates[0]}" > "$file"
-  echo "${dates[1]}" >> "$file"
-  echo "${dates[2]}" >> "$file"
 fi
 
 if [ "$changes" = false ]; then
@@ -107,7 +102,16 @@ date > .timestamp
 
 # this is the real update
 (cd Fiji.app &&
-jrunscript ../bootstrap.js update-force-pristine &&
+echo "== Performing first update ==" &&
+DEBUG=1 jrunscript ../bootstrap.js update-force-pristine &&
+# CTR HACK: Run the update a 2nd time, "just in case." In practice, this does
+# change the state of the installation, pulling in a newer Contents/Info.plist.
+# While I do not understand why, the long-term plan is to ditch Updater-based
+# bootstrapping anyway, so I'm not going to dig more deeply into it.
+# See also this Image.sc Forum thread:
+# https://forum.image.sc/t/java-6-required-on-mac-install-fiji/23093/15
+echo "== Performing second update ==" &&
+DEBUG=1 jrunscript ../bootstrap.js update-force-pristine &&
 
 echo "== Creating nojre archives =="
 find -type f -newer ../.timestamp > ../updated.txt &&
@@ -143,16 +147,40 @@ do
       --platforms=$platform --jre ../fiji-$platform.$ext
   done
 done)
-
 gzip -d < fiji-nojre.tar.gz | bzip2 -9 > fiji-nojre.tar.bz2
+
+echo
+echo "== Create dmg =="
+tmp="$(mktemp -d tmp)"
+tar -xf fiji-macosx.tar.gz -C tmp
+
+# We use https://pypi.org/project/dmgbuild/ to create the dmg.
+dmgbuild -s settings.py "Fiji" fiji-macosx.dmg
 
 echo
 echo "== Transferring artifacts =="
 
 # transfer artifacts to ImageJ download server
-for f in fiji*.zip fiji*.tar.gz
+# and copy them to the archive
+timestamp=`date "+%Y%m%d-%H%M"`
+ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10000 fiji-builds@downloads.imagej.net "mkdir -p 'archive/$timestamp'"
+for f in fiji*.zip fiji*.tar.gz fiji*.dmg
 do
-  echo "Uploading $f"
-  scp -p "$f" fiji-builds@downloads.imagej.net:"$f.part" &&
-  ssh fiji-builds@downloads.imagej.net "mv -f \"$f.part\" \"latest/$f\""
+  echo "Processing $f"
+  echo "... archiving previous version"
+  ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10000 fiji-builds@downloads.imagej.net "cp -p 'latest/$f' 'archive/$timestamp'"
+  echo "... uploading new version"
+  scp -o ServerAliveInterval=60 -o ServerAliveCountMax=10000 -p "$f" fiji-builds@downloads.imagej.net:"$f.part"
+  echo "... deploying new version"
+  ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10000 fiji-builds@downloads.imagej.net "mv $f.part 'latest/$f'"
+  if [ $? -ne 0 ]
+  then
+    echo "[ERROR] UPLOAD FAILED for file $f"
+    exit 1
+  fi
 done
+
+# Finally since everything worked OK save the new dates
+echo "${dates[0]}" > "$file"
+echo "${dates[1]}" >> "$file"
+echo "${dates[2]}" >> "$file"
