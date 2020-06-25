@@ -131,7 +131,7 @@ mkdir -p tmp
 tar -xf fiji-macosx.tar.gz -C tmp
 # We use https://pypi.org/project/dmgbuild/ to create the dmg.
 
-dmgbuild -s $TRAVIS_BUILD_DIR/.travis/settings.py -D app=$TRAVIS_BUILD_DIR/.travis/tmp/Fiji.app "Fiji" fiji-macosx.dmg
+dmgbuild -s $TRAVIS_BUILD_DIR/.travis/settings.py -D app=$TRAVIS_BUILD_DIR/tmp/Fiji.app "Fiji" fiji-macosx.dmg
 
 echo
 echo "== Transferring artifacts =="
