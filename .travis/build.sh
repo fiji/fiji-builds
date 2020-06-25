@@ -30,9 +30,6 @@ then
   # Save the first dates
   echo "Running for the first time, not dates to compare with, assuming changes exist"
   mkdir -p ./cache
-  echo "${dates[0]}" > "$file"
-  echo "${dates[1]}" >> "$file"
-  echo "${dates[2]}" >> "$file"
   changes=true
 else
   # Compare to previous cached dates, then save latest dates
@@ -130,7 +127,7 @@ gzip -d < fiji-nojre.tar.gz | bzip2 -9 > fiji-nojre.tar.bz2
 echo
 echo "== Create dmg =="
 
-mkdir -p tmp 
+mkdir -p tmp
 tar -xf fiji-macosx.tar.gz -C tmp
 # We use https://pypi.org/project/dmgbuild/ to create the dmg.
 dmgbuild -s settings.py "Fiji" fiji-macosx.dmg
