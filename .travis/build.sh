@@ -9,20 +9,6 @@ then
   exit
 fi
 
-echo "== Configuring environment ==" &&
-
-# Configure SSH. The file .travis/ssh-rsa-key.enc must contain an
-# encrypted private RSA key for communicating with the destination server.
-mkdir -p "$HOME/.ssh" &&
-openssl aes-256-cbc \
-  -K "$encrypted_9948786e33bf_key" \
-  -iv "$encrypted_9948786e33bf_iv" \
-  -in '.travis/ssh-rsa-key.enc' \
-  -out "$HOME/.ssh/id_rsa" -d &&
-chmod 400 "$HOME/.ssh/id_rsa" &&
-ssh-keyscan -H downloads.imagej.net >> "$HOME/.ssh/known_hosts" &&
-echo "SSH key installed."
-
 echo
 echo "== Constructing Fiji installations =="
 
