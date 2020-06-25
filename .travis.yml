@@ -1,7 +1,6 @@
-branches:
-  only:
-  - master
-install: true
+os: osx
+install:
+  - pip install dmgbuild
 addons:
   ssh_known_hosts: downloads.imagej.net
 before_script:

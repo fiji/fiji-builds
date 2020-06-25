@@ -1,14 +1,6 @@
 #!/bin/bash
 set -e
 
-if [ "$TRAVIS_SECURE_ENV_VARS" != true \
-  -o "$TRAVIS_PULL_REQUEST" != false \
-  -o "$TRAVIS_BRANCH" != master ]
-then
-  echo "Skipping non-canonical branch."
-  exit
-fi
-
 echo
 echo "== Constructing Fiji installations =="
 
@@ -22,12 +14,12 @@ date1="${date1#*, }"
 date2="${date2#*, }"
 date3="${date3#*, }"
 # Convert date to seconds since the epoch, commented code is MacOS version
-#date1=`date -j -f '%d %b %Y %H:%M:%S %Z ' "$date1" +%s`
-#date2=`date -j -f '%d %b %Y %H:%M:%S %Z ' "$date2" +%s`
-#date3=`date -j -f '%d %b %Y %H:%M:%S %Z ' "$date3" +%s`
-date1=`date --date="$date1" +%s`
-date2=`date --date="$date2" +%s`
-date3=`date --date="$date3" +%s`
+date1=`date -j -f '%d %b %Y %H:%M:%S %Z ' "$date1" +%s`
+date2=`date -j -f '%d %b %Y %H:%M:%S %Z ' "$date2" +%s`
+date3=`date -j -f '%d %b %Y %H:%M:%S %Z ' "$date3" +%s`
+#date1=`date --date="$date1" +%s`
+#date2=`date --date="$date2" +%s`
+#date3=`date --date="$date3" +%s`
 dates=( "$date1" "$date2" "$date3" )
 
 # Read previous dates. The first time there wont be any
@@ -97,7 +89,7 @@ echo "== Performing second update ==" &&
 DEBUG=1 jrunscript ../bootstrap.js update-force-pristine &&
 
 echo "== Creating nojre archives =="
-find -type f -newer ../.timestamp > ../updated.txt &&
+find . -type f -newer ../.timestamp > ../updated.txt &&
 for p in fiji-nojre.tar.gz fiji-nojre.zip
 do
   java -Dij.dir=. -classpath plugins/\*:jars/\* fiji.packaging.Packager ../$p
@@ -130,17 +122,34 @@ do
       --platforms=$platform --jre ../fiji-$platform.$ext
   done
 done)
-
 gzip -d < fiji-nojre.tar.gz | bzip2 -9 > fiji-nojre.tar.bz2
 
 echo
+echo "== Create dmg =="
+
+mkdir -p tmp
+tar -xf fiji-macosx.tar.gz -C tmp
+# We use https://pypi.org/project/dmgbuild/ to create the dmg.
+
+dmgbuild -s $TRAVIS_BUILD_DIR/.travis/settings.py -D app=$TRAVIS_BUILD_DIR/tmp/Fiji.app "Fiji" fiji-macosx.dmg
+
+echo
 echo "== Transferring artifacts =="
+
+if [ "$TRAVIS_SECURE_ENV_VARS" != true \
+  -o "$TRAVIS_PULL_REQUEST" != false \
+  -o "$TRAVIS_BRANCH" != master ]
+then
+  echo "Skipping deployment for non-canonical branch."
+  exit
+fi
 
 # transfer artifacts to ImageJ download server
 # and copy them to the archive
 timestamp=`date "+%Y%m%d-%H%M"`
 ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10000 fiji-builds@downloads.imagej.net "mkdir -p 'archive/$timestamp'"
-for f in fiji*.zip fiji*.tar.gz
+
+for f in fiji*.zip fiji*.tar.gz fiji*.dmg
 do
   echo "Processing $f"
   echo "... archiving previous version"
