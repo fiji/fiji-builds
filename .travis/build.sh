@@ -48,7 +48,7 @@ dates=( "$date1" "$date2" "$date3" )
 changes=false
 file="./cache/dates.txt"
 if [ ! -e "$file" ];
-then 
+then
   # Save the first dates
   echo "Running for the first time, not dates to compare with, assuming changes exist"
   mkdir -p ./cache
@@ -63,7 +63,7 @@ else
   while IFS= read -r line
   do
     echo "Comparing new $line to previous ${dates[$i]}"
-	  if [[ $line -lt ${dates[$i]} ]]; 
+	  if [[ $line -lt ${dates[$i]} ]];
     then
       echo "There are updates in the ${repos[$i]} site, new distros will be generated"
       changes=true
@@ -165,7 +165,7 @@ do
   echo "... uploading new version"
   scp -o ServerAliveInterval=60 -o ServerAliveCountMax=10000 -p "$f" fiji-builds@downloads.imagej.net:"$f.part"
   echo "... deploying new version"
-  ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10000 fiji-builds@downloads.imagej.net "mv $f.part 'latest'"
+  ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10000 fiji-builds@downloads.imagej.net "mv $f.part 'latest/$f'"
   if [ $? -ne 0 ]
   then
     echo "[ERROR] UPLOAD FAILED for file $f"
