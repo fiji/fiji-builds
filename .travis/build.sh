@@ -156,11 +156,16 @@ echo "== Transferring artifacts =="
 # transfer artifacts to ImageJ download server
 # and copy them to the archive
 timestamp=`date "+%Y%m%d-%H%M"`
+ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10000 fiji-builds@downloads.imagej.net "mkdir -p 'archive/$timestamp'"
 for f in fiji*.zip fiji*.tar.gz
 do
-  echo "Uploading $f"
-  scp -p "$f" fiji-builds@downloads.imagej.net:"$f.part" &&
-  ssh fiji-builds@downloads.imagej.net "mv -f '$f.part' 'latest/$f' && mkdir -p 'archive/$timestamp' && ln 'latest/$f' 'archive/$timestamp/$f'"
+  echo "Processing $f"
+  echo "... archiving previous version"
+  ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10000 fiji-builds@downloads.imagej.net "cp -p 'latest/$f' 'archive/$timestamp'"
+  echo "... uploading new version"
+  scp -o ServerAliveInterval=60 -o ServerAliveCountMax=10000 -p "$f" fiji-builds@downloads.imagej.net:"$f.part"
+  echo "... deploying new version"
+  ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10000 fiji-builds@downloads.imagej.net "mv $f.part 'latest'"
   if [ $? -ne 0 ]
   then
     echo "[ERROR] UPLOAD FAILED for file $f"
