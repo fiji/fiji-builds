@@ -1,9 +1,8 @@
 branches:
   only:
   - master
-install: true
-addons:
-  ssh_known_hosts: downloads.imagej.net
+install:
+  - echo 'downloads.imagej.net ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBO4ikjAdqZ5Zaf62/qLnMpLsEHYuueqvJEgecDio+GLGFQy2jLHjVikVtYgYQa0SWow7uGzsSQXiYk7rtpZuY+o=' >> $HOME/.ssh/known_hosts
 before_script:
   - openssl aes-256-cbc -K $encrypted_9948786e33bf_key -iv $encrypted_9948786e33bf_iv -in .travis/ssh-rsa-key.enc -out /tmp/deploy_rsa -d
   - eval "$(ssh-agent -s)"
