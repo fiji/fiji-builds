@@ -10,7 +10,7 @@ then
 fi
 
 CACHE_DIR=cache
-FIJI_HOME="Fiji.app"
+FIJI_HOME="$CACHE_DIR/Fiji.app"
 
 echo
 echo "== Constructing Fiji installations =="
@@ -106,7 +106,6 @@ do
   java -Dij.dir=. -classpath plugins/\*:jars/\* fiji.packaging.Packager ../$p
 done &&
 
-echo "== Downloading bundled Java for platform =="
 # download bundled Java for this platform
 for platform in linux32 linux64 win32 win64 macosx
 do
@@ -116,7 +115,9 @@ do
   linux64) java=linux-amd64;;
   esac
 
-  test -d java/$java || (mkdir -p java/$java &&
+  test -d java/$java || {
+		echo "== Downloading bundled Java for $platform =="
+		mkdir -p java/$java &&
     cd java/$java &&
     curl -fsO https://downloads.imagej.net/java/$java.tar.gz &&
     tar -zxvf $java.tar.gz &&
@@ -124,7 +125,7 @@ do
     jre=$(find . -maxdepth 1 -name 'jre*') &&
     jdk=$(echo "$jre" | sed 's/jre/jdk/') &&
     if [ "$jdk" ]; then mkdir "$jdk" && mv "$jre" "$jdk/jre"; fi
-  )
+  }
 
   echo "== Generating Fiji archives for $platform =="
   for ext in zip tar.gz
