@@ -9,6 +9,9 @@ then
   exit
 fi
 
+CACHE_DIR=cache
+FIJI_HOME="Fiji.app"
+
 echo
 echo "== Constructing Fiji installations =="
 
@@ -32,12 +35,12 @@ dates=( "$date1" "$date2" "$date3" )
 
 # Read previous dates. The first time there wont be any
 changes=false
-file="./cache/dates.txt"
-if [ ! -e "$file" ];
+datesFile="$CACHE_DIR/dates.txt"
+if [ ! -e "$datesFile" ];
 then
   # Save the first dates
   echo "Running for the first time, not dates to compare with, assuming changes exist"
-  mkdir -p ./cache
+  mkdir -p "$CACHE_DIR"
   changes=true
 else
   # Compare to previous cached dates, then save latest dates
@@ -52,7 +55,7 @@ else
       changes=true
     fi
     i=$i+1
-  done <"$file"
+  done <"$datesFile"
 fi
 
 if [ "$changes" = false ]; then
@@ -62,7 +65,7 @@ fi
 # bootstrap with Java-8 update site enabled
 curl -o bootstrap.js https://downloads.imagej.net/bootstrapJ8.js
 
-test -d Fiji.app || mkdir Fiji.app
+test -d "$FIJI_HOME" || mkdir "$FIJI_HOME"
 
 # make sure all platforms are active
 for LAUNCHER in \
@@ -73,18 +76,18 @@ for LAUNCHER in \
   fiji-win32.exe fiji-win64.exe \
   Contents/MacOS/fiji-macosx Contents/MacOS/fiji-tiger
 do
-  mkdir -p Fiji.app/$(dirname $LAUNCHER) &&
-  touch Fiji.app/$LAUNCHER
+  mkdir -p "$FIJI_HOME/$(dirname "$LAUNCHER")" &&
+  touch "$FIJI_HOME/$LAUNCHER"
 done
 
 # get MacOSX-specific file
-mkdir -p Fiji.app/Contents &&
-curl https://raw.githubusercontent.com/fiji/fiji/master/Contents/Info.plist > Fiji.app/Contents/Info.plist
+mkdir -p "$FIJI_HOME"/Contents &&
+curl https://raw.githubusercontent.com/fiji/fiji/master/Contents/Info.plist > "$FIJI_HOME"/Contents/Info.plist
 
 date > .timestamp
 
 # this is the real update
-(cd Fiji.app &&
+(cd "$FIJI_HOME" &&
 echo "== Performing first update ==" &&
 DEBUG=1 jrunscript ../bootstrap.js update-force-pristine &&
 # CTR HACK: Run the update a 2nd time, "just in case." In practice, this does
@@ -157,6 +160,6 @@ do
 done
 
 # Finally since everything worked OK save the new dates
-echo "${dates[0]}" > "$file"
-echo "${dates[1]}" >> "$file"
-echo "${dates[2]}" >> "$file"
+echo "${dates[0]}" > "$datesFile"
+echo "${dates[1]}" >> "$datesFile"
+echo "${dates[2]}" >> "$datesFile"
