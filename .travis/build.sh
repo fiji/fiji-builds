@@ -135,8 +135,6 @@ do
   done
 done)
 
-gzip -d < fiji-nojre.tar.gz | bzip2 -9 > fiji-nojre.tar.bz2
-
 echo
 echo "== Transferring artifacts =="
 
