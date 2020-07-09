@@ -89,7 +89,7 @@ date > .timestamp
 # this is the real update
 (cd "$FIJI_HOME" &&
 echo "== Performing first update ==" &&
-DEBUG=1 jrunscript ../bootstrap.js update-force-pristine &&
+DEBUG=1 jrunscript ~/bootstrap.js update-force-pristine &&
 # CTR HACK: Run the update a 2nd time, "just in case." In practice, this does
 # change the state of the installation, pulling in a newer Contents/Info.plist.
 # While I do not understand why, the long-term plan is to ditch Updater-based
@@ -97,13 +97,13 @@ DEBUG=1 jrunscript ../bootstrap.js update-force-pristine &&
 # See also this Image.sc Forum thread:
 # https://forum.image.sc/t/java-6-required-on-mac-install-fiji/23093/15
 echo "== Performing second update ==" &&
-DEBUG=1 jrunscript ../bootstrap.js update-force-pristine &&
+DEBUG=1 jrunscript ~/bootstrap.js update-force-pristine &&
 
 echo "== Creating nojre archives =="
-find -type f -newer ../.timestamp > ../updated.txt &&
+find -type f -newer ~/.timestamp > ~/updated.txt &&
 for p in fiji-nojre.tar.gz fiji-nojre.zip
 do
-  java -Dij.dir=. -classpath plugins/\*:jars/\* fiji.packaging.Packager ../$p
+  java -Dij.dir=. -classpath plugins/\*:jars/\* fiji.packaging.Packager ~/$p
 done &&
 
 # download bundled Java for this platform
@@ -131,7 +131,7 @@ do
   for ext in zip tar.gz
   do
     java -Dij.dir=. -classpath plugins/\*:jars/\* fiji.packaging.Packager \
-      --platforms=$platform --jre ../fiji-$platform.$ext
+      --platforms=$platform --jre ~/fiji-$platform.$ext
   done
 done)
 
