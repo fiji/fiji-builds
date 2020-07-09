@@ -63,7 +63,7 @@ if [ "$changes" = false ]; then
    exit 0
 fi
 # bootstrap with Java-8 update site enabled
-curl -o bootstrap.js https://downloads.imagej.net/bootstrapJ8.js
+curl -o ~/bootstrap.js https://downloads.imagej.net/bootstrapJ8.js
 
 test -d "$FIJI_HOME" || mkdir "$FIJI_HOME"
 
@@ -84,7 +84,7 @@ done
 mkdir -p "$FIJI_HOME"/Contents &&
 curl https://raw.githubusercontent.com/fiji/fiji/master/Contents/Info.plist > "$FIJI_HOME"/Contents/Info.plist
 
-date > .timestamp
+date > ~/.timestamp
 
 # this is the real update
 (cd "$FIJI_HOME" &&
