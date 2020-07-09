@@ -140,24 +140,21 @@ echo
 echo "== Transferring artifacts =="
 
 # transfer artifacts to ImageJ download server
-# and copy them to the archive
+scp -p fiji*.zip fiji*.tar.gz fiji-builds@downloads.imagej.net:upload/ || {
+	echo '[ERROR] Failed to upload generated archives.'
+	exit 1
+}
+
+# move artifacts into the archive structure and update latest link
 timestamp=`date "+%Y%m%d-%H%M"`
-ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10000 fiji-builds@downloads.imagej.net "mkdir -p 'archive/$timestamp'"
-for f in fiji*.zip fiji*.tar.gz
-do
-  echo "Processing $f"
-  echo "... archiving previous version"
-  ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10000 fiji-builds@downloads.imagej.net "cp -p 'latest/$f' 'archive/$timestamp'"
-  echo "... uploading new version"
-  scp -o ServerAliveInterval=60 -o ServerAliveCountMax=10000 -p "$f" fiji-builds@downloads.imagej.net:"$f.part"
-  echo "... deploying new version"
-  ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10000 fiji-builds@downloads.imagej.net "mv $f.part 'latest/$f'"
-  if [ $? -ne 0 ]
-  then
-    echo "[ERROR] UPLOAD FAILED for file $f"
-    exit 1
-  fi
-done
+ssh fiji-builds@downloads.imagej.net "
+mkdir -p 'archive/$timestamp' &&
+mv upload/* 'archive/$timestamp' &&
+rm latest && ln -s 'archive/$timestamp' latest
+" || {
+	echo '[ERROR] Failed to move uploaded archives into place.'
+	exit 1
+}
 
 # Finally since everything worked OK save the new dates
 echo "${dates[0]}" > "$datesFile"
