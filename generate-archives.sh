@@ -1,5 +1,6 @@
 #!/bin/sh
 
+dir=$(cd "$(dirname "$0")" && pwd)
 FIJI_HOME=$1
 test -d "$FIJI_HOME" || { echo "[ERROR] Please specify folder for Fiji.app." && exit 1; }
 cd "$FIJI_HOME"
@@ -7,7 +8,7 @@ cd "$FIJI_HOME"
 echo "--> Creating nojre archives"
 for p in fiji-nojre.tar.gz fiji-nojre.zip
 do
-  java -Dij.dir=. -classpath 'plugins/*:jars/*' fiji.packaging.Packager ~/$p
+  java -Dij.dir=. -classpath 'plugins/*:jars/*' fiji.packaging.Packager "$dir/$p"
 done &&
 
 for platform in linux64 win32 win64 macosx
@@ -28,7 +29,7 @@ do
   for ext in zip tar.gz
   do
     java -Dij.dir=. -classpath 'plugins/*:jars/*' fiji.packaging.Packager \
-      --platforms=$platform --jre ~/fiji-$platform.$ext
+      --platforms=$platform --jre "$dir/fiji-$platform.$ext"
   done
 
   # HACK: Now put them back. :-)
