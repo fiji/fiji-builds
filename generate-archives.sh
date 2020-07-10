@@ -13,9 +13,25 @@ done &&
 for platform in linux64 win32 win64 macosx
 do
   echo "--> Generating Fiji archives for $platform"
+
+  # HACK: Move aside non-matching platform-specific JARs.
+  # The Fiji Packager doesn't understand them yet; see #4.
+  mv \
+    "$FIJI_HOME/jars/linux32" \
+    "$FIJI_HOME/jars/linux64" \
+    "$FIJI_HOME/jars/win32" \
+    "$FIJI_HOME/jars/win64" \
+    "$FIJI_HOME/jars/macosx" \
+    .
+  mv "$platform" "$FIJI_HOME/jars/"
+
   for ext in zip tar.gz
   do
     java -Dij.dir=. -classpath 'plugins/*:jars/*' fiji.packaging.Packager \
       --platforms=$platform --jre ~/fiji-$platform.$ext
   done
+
+  # HACK: Now put them back. :-)
+  mv "$FIJI_HOME/jars/$platform" .
+  mv linux32 linux64 win32 win64 macosx "$FIJI_HOME/jars/"
 done
