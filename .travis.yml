@@ -12,4 +12,5 @@ before_script:
 script: ".travis/build.sh"
 cache:
   directories:
+    - "~/.m2/repository"
     - ./cache
