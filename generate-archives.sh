@@ -17,14 +17,8 @@ do
 
   # HACK: Move aside non-matching platform-specific JARs.
   # The Fiji Packager doesn't understand them yet; see #4.
-  mv \
-    "$FIJI_HOME/jars/linux32" \
-    "$FIJI_HOME/jars/linux64" \
-    "$FIJI_HOME/jars/win32" \
-    "$FIJI_HOME/jars/win64" \
-    "$FIJI_HOME/jars/macosx" \
-    .
-  mv "$platform" "$FIJI_HOME/jars/"
+  mv jars/linux32 jars/linux64 jars/win32 jars/win64 jars/macosx ..
+  mv "../$platform" jars/
 
   for ext in zip tar.gz
   do
@@ -33,6 +27,6 @@ do
   done
 
   # HACK: Now put them back. :-)
-  mv "$FIJI_HOME/jars/$platform" .
-  mv linux32 linux64 win32 win64 macosx "$FIJI_HOME/jars/"
+  mv "jars/$platform" ..
+  mv ../linux32 ../linux64 ../win32 ../win64 ../macosx jars/
 done
