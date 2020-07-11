@@ -52,5 +52,5 @@ done
 echo "--> Populating the installation"
 rm -rf fiji && git clone git://github.com/fiji/fiji --depth 1
 # NB: Suppress "Downloading/Downloaded" messages.
-mvn -f fiji/pom.xml scijava:populate-app -Dscijava.app.directory="$FIJI_HOME" 2>&1 |
-  grep -v '^Download\(ed\|ing\) from '
+mvn -B -f fiji/pom.xml scijava:populate-app -Dscijava.app.directory="$FIJI_HOME" |
+  grep -v '^\[INFO\] Download\(ed\|ing\) from '
