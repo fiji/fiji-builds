@@ -13,6 +13,8 @@ timestamp=`date "+%Y%m%d-%H%M"`
 ssh -v fiji-builds@downloads.imagej.net "
 mkdir -p 'archive/$timestamp' &&
 mv upload/* 'archive/$timestamp' &&
+chmod o+x 'archive/$timestamp' &&
+chmod -R o+r 'archive/$timestamp' &&
 rm latest && ln -s 'archive/$timestamp' latest
 " || {
   echo '[ERROR] Failed to move uploaded archives into place.'
