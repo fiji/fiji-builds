@@ -52,6 +52,5 @@ done
 echo "--> Populating the installation"
 rm -rf fiji && git clone git://github.com/fiji/fiji --depth 1
 # NB: Suppress "Downloading/Downloaded" messages.
-# See: https://stackoverflow.com/a/35653426/1207769
-export MAVEN_OPTS="$MAVEN_OPTS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
-mvn -f fiji/pom.xml scijava:populate-app -Dscijava.app.directory="$FIJI_HOME"
+mvn -f fiji/pom.xml scijava:populate-app -Dscijava.app.directory="$FIJI_HOME" 2>&1 |
+  grep -v '^Download\(ed\|ing\) from '
