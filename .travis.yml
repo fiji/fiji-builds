@@ -3,7 +3,6 @@ branches:
   - master
 install:
   - mkdir -p ~/.ssh
-  - echo 'downloads.imagej.net ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCyVce7myJU+4KKDXnP6A2A+lgxUciyGFUv6brZ8KQ75c1J5mmxT3A1AqmMIncjFz7Sze2v/RSZQl0qlH5SIWnnb4KjMcGO0cKRG5S975TpLGRKJXU0Rrx28FceEZXJgVuZoJLADw9fm0a9tNvLr0yapE1HO0KUf57AA8cS9EUTcm0zY+hcBSdq7P+azeVe6UK1x1Qsvt3yE0ta1SGCLinvzZ+6dWXG/Ya4dZYqSRoAZ4BRUopZGxNSQfMSQmnECUy7sUkPQIPJWZlUTZAIWXRQchTutsKwmKXueBekbVZ5iGieBYa+oKntx0V8igv52TflzdPlcJIUI/tREU4GIe+x' >> ~/.ssh/known_hosts
   - echo 'downloads.imagej.net ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBO4ikjAdqZ5Zaf62/qLnMpLsEHYuueqvJEgecDio+GLGFQy2jLHjVikVtYgYQa0SWow7uGzsSQXiYk7rtpZuY+o=' >> ~/.ssh/known_hosts
   - openssl aes-256-cbc -K $encrypted_9948786e33bf_key -iv $encrypted_9948786e33bf_iv
     -in .travis/ssh-rsa-key.enc -out ~/.ssh/id_rsa -d
