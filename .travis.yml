@@ -3,7 +3,7 @@ branches:
   - master
 install:
   - mkdir -p ~/.ssh
-  - echo 'downloads.imagej.net ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBO4ikjAdqZ5Zaf62/qLnMpLsEHYuueqvJEgecDio+GLGFQy2jLHjVikVtYgYQa0SWow7uGzsSQXiYk7rtpZuY+o=' >> ~/.ssh/known_hosts
+  - echo 'downloads.imagej.net ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBKHd/bb9AlriEl4OG5xiZf8GhkNCSiDBEeXyoV/i9G7vrigRpRcRAhJQjbgeNTHIAJNTTaT33of4oz74IxFoE1Y=' >> ~/.ssh/known_hosts
   - openssl aes-256-cbc -K $encrypted_9948786e33bf_key -iv $encrypted_9948786e33bf_iv
     -in .travis/ssh-rsa-key.enc -out ~/.ssh/id_rsa -d
   - chmod -R -w,o-rwx,g-rwx ~/.ssh
