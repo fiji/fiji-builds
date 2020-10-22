@@ -8,4 +8,7 @@ install:
     -in .travis/ssh-rsa-key.enc -out ~/.ssh/id_rsa -d
   - chmod -R -w,o-rwx,g-rwx ~/.ssh
 script: ".travis/build.sh"
-cache: false
+cache:
+  directories:
+    - "~/.m2/repository"
+    - ./cache
