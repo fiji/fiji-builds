@@ -40,10 +40,7 @@ do
       cd "$javaDir" &&
       curl -fsO https://downloads.imagej.net/java/$java.tar.gz &&
       tar -zxvf $java.tar.gz &&
-      rm $java.tar.gz &&
-      jre=$(find . -maxdepth 1 -name 'jre*') &&
-      jdk=$(echo "$jre" | sed 's/jre/jdk/') &&
-      if [ "$jdk" ]; then mkdir "$jdk" && mv "$jre" "$jdk/jre"; fi
+      rm $java.tar.gz
     )
   fi
 done
