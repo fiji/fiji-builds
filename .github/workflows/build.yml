@@ -1,0 +1,33 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure the cache
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-cache
+        with:
+          path: ~/cache
+          key: ${{ runner.os }}-build-${{ env.cache-name }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Configure SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Execute the build
+        run: ./build.sh

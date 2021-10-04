@@ -1,14 +1,6 @@
 #!/bin/bash
 set -e
 
-if [ "$TRAVIS_SECURE_ENV_VARS" != true \
-  -o "$TRAVIS_PULL_REQUEST" != false \
-  -o "$TRAVIS_BRANCH" != master ]
-then
-  echo "Skipping non-canonical branch."
-  exit
-fi
-
 CACHE_DIR=cache
 FIJI_HOME="$CACHE_DIR/Fiji.app"
 

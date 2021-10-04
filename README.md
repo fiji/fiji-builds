@@ -1,4 +1,4 @@
-[![](https://travis-ci.com/fiji/fiji-builds.svg?branch=master)](https://app.travis-ci.com/fiji/fiji-builds)
+[![](https://github.com/fiji/fiji-builds/actions/workflows/build.yml/badge.svg)](https://github.com/fiji/fiji-builds/actions/workflows/build.yml)
 
 This repository creates the Fiji downloadable bundles available from:
 
