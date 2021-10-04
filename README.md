@@ -1,4 +1,4 @@
-[![](https://travis-ci.com/fiji/fiji-builds.svg?branch=master)](https://travis-ci.com/fiji/fiji-builds)
+[![](https://travis-ci.com/fiji/fiji-builds.svg?branch=master)](https://app.travis-ci.com/fiji/fiji-builds)
 
 This repository creates the Fiji downloadable bundles available from:
 
