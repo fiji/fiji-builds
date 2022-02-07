@@ -77,7 +77,7 @@ echo
 echo "== Transferring artifacts =="
 ./upload-archives.sh || exit 4
 
-# Finally since everything worked OK, save the new dates.
+# Finally, since everything worked OK, save the new dates.
 echo "${dates[0]}" > "$datesFile"
 echo "${dates[1]}" >> "$datesFile"
 echo "${dates[2]}" >> "$datesFile"
