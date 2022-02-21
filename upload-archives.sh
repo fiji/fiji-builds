@@ -1,22 +1,29 @@
 #!/bin/sh
 
-# transfer artifacts to ImageJ download server
-echo '--> Uploading archives'
-scp -pv fiji*.zip fiji*.tar.gz fiji-builds@downloads.imagej.net:upload/ || {
-  echo '[ERROR] Failed to upload generated archives.'
-  exit 1
-}
-
-# move artifacts into the archive structure and update latest link
-echo '--> Moving uploaded archives into place'
-timestamp=`date "+%Y%m%d-%H%M"`
-ssh -v fiji-builds@downloads.imagej.net "
-mkdir -p 'archive/$timestamp' &&
-mv upload/* 'archive/$timestamp' &&
-chmod o+x 'archive/$timestamp' &&
-chmod -R o+r 'archive/$timestamp' &&
-rm latest && ln -s 'archive/$timestamp' latest
-" || {
-  echo '[ERROR] Failed to move uploaded archives into place.'
+test "$WEBDAV_USER" -a "$WEBDAV_PASS" || {
+  echo "[ERROR] No WebDAV credentials in environment. Skipping upload."
   exit 2
 }
+
+upload() {
+  curl -s -A fiji-builds \
+    -u "$WEBDAV_USER:$WEBDAV_PASS" \
+    -w "Response code %{http_code}." \
+    -T "$1" https://downloads.imagej.net/incoming/"$1"
+}
+
+# Upload files to downloads.imagej.net.
+echo '--> Uploading archives'
+for f in fiji*.zip fiji*.tar.gz
+do
+  echo "$f"
+  response=$(upload "$f") && echo "$response" | grep -q "Response code 201\." || {
+    echo "[ERROR] Upload of '$f' failed:\n$response"
+    exit 1
+  }
+done
+
+# Mark the upload as complete.
+echo "--> Marking upload complete"
+date > fiji-uploaded.txt
+upload fiji-uploaded.txt >/dev/null
