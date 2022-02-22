@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: '33 0,3,6,9,12,15,18,21 * * *' # once every 3 hours
 
 jobs:
   build:
