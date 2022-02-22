@@ -20,7 +20,7 @@ jobs:
           cache-name: cache
         with:
           path: ~/cache
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('cache/dates.txt') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('~/cache/dates.txt') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
