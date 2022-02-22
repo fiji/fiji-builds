@@ -26,3 +26,6 @@ jobs:
 
       - name: Execute the build
         run: ./build.sh
+        env:
+           WEBDAV_PASS: ${{ secrets.WEBDAV_PASS }}
+           WEBDAV_USER: ${{ secrets.WEBDAV_USER }}
