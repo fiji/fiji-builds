@@ -20,11 +20,9 @@ jobs:
           cache-name: cache-cache
         with:
           path: ~/cache
-          key: ${{ runner.os }}-build-${{ env.cache-name }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('cache/dates.txt') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
 
       - name: Execute the build
         run: ./build.sh
