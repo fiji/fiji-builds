@@ -47,7 +47,7 @@ done
 
 # Use scijava-maven-plugin:populate-app goal to populate the JARs.
 echo "--> Populating the installation"
-rm -rf fiji && git clone git://github.com/fiji/fiji --depth 1
+rm -rf fiji && git clone https://github.com/fiji/fiji --depth 1
 # NB: Suppress "Downloading/Downloaded" messages.
 mvn -B -f fiji/pom.xml scijava:populate-app -Dscijava.app.directory="$FIJI_HOME" |
   grep -v '^\[INFO\] Download\(ed\|ing\) from '
