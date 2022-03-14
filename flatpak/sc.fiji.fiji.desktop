@@ -1,0 +1,16 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+
+Name=Fiji (Is Just ImageJ)
+GenericName=Fiji
+Comment=Scientific Image Analysis
+Icon=sc.fiji.fiji
+
+Categories=Education;Science;ImageProcessing;
+Exec=/app/fiji/launch-imagej.sh %F
+
+Terminal=false
+StartupNotify=true
+StartupWMClass=net-imagej-launcher-ClassLauncher
+MimeType=image/*;

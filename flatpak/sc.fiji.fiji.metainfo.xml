@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>sc.fiji.fiji</id>
+
+  <name>Fiji</name>
+  <summary>Scientific image analysis with ImageJ</summary>
+
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>LicenseRef-free=https://imagej.net/licensing/</project_license>
+
+  <description>
+    <p>
+      Fiji is an image processing package — a "batteries-included" distribution of ImageJ,
+      bundling many plugins which facilitate scientific image analysis.
+    </p>
+  </description>
+
+  <launchable type="desktop-id">sc.fiji.fiji.desktop</launchable>
+</component>

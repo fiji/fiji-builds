@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '33 0,3,6,9,12,15,18,21 * * *' # once every 3 hours
+
+jobs:
+  build-flatpak:
+    name: Build (Flatpak)
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Create Build Environment
+      run: cd flatpak/ && podman build -t flatpak -f ./Dockerfile .
+
+    - name: Build
+      run: podman run -t --privileged -v `pwd`:/build flatpak
+           eatmydata ./flatpak/autobuild-bundle.sh
+
+    - name: Upload bundle
+      uses: actions/upload-artifact@v2
+      with:
+        name: Flatpak Bundle
+        path: |
+          flatpak/*.flatpak
