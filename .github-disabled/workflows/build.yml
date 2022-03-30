@@ -14,16 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Configure the cache
-        uses: actions/cache@v2
-        env:
-          cache-name: cache
-        with:
-          path: ~/cache
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('~/cache/dates.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-
       - name: Execute the build
         run: ./build.sh
         env:
