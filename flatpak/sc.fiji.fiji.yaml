@@ -1,0 +1,87 @@
+id: sc.fiji.fiji
+runtime: org.freedesktop.Platform
+runtime-version: '21.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.openjdk8
+command: /app/fiji/launch-imagej.sh
+
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=x11
+  - --socket=wayland
+  - --device=dri
+  - --filesystem=host
+  - --env=PATH=/app/bin:/app/jre/bin:/usr/bin
+  - --env=JAVA_HOME=/app/jre
+
+build-options:
+  env:
+    PATH: /app/bin:/usr/bin:/usr/lib/sdk/openjdk8/bin/
+    JAVA_HOME: /usr/lib/sdk/openjdk8/jvm/java-8-openjdk/
+  build-args:
+    - --share=network
+
+modules:
+- name: openjdk
+  buildsystem: simple
+  build-commands:
+    - /usr/lib/sdk/openjdk8/install.sh
+
+- name: imagej-launcher
+  buildsystem: simple
+  build-commands:
+    - cmake -GNinja -Bb -DCMAKE_BUILD_TYPE=RelWithDebInfo .
+    - cd b && ninja
+    - mkdir -p /app/fiji/
+    - install b/ImageJ-linux64 /app/fiji/
+  sources:
+    - type: git
+      tag: imagej-launcher-6.0.2
+      url: https://github.com/imagej/imagej-launcher.git
+    - type: patch
+      path: patches/ijlauncher_Consider-files-with-an-mtime-of-0.patch
+
+- name: fiji-make
+  buildsystem: simple
+  build-commands:
+    - mvn clean install -DskipTests -Dscijava.app.directory="/app/fiji"
+  sources:
+    - type: git
+      url: https://github.com/fiji/fiji.git
+
+- name: fiji-update
+  buildsystem: simple
+  build-options:
+    env:
+      DEBUG: '1'
+  build-commands:
+    - /app/fiji/ImageJ-linux64 --update add-update-site Fiji https://update.fiji.sc/
+    - /app/fiji/ImageJ-linux64 --update add-update-site Java-8 https://sites.imagej.net/Java-8/
+    - /app/fiji/ImageJ-linux64 --update update-force-pristine
+    # restore our patched launcher
+    - rm /app/fiji/ImageJ-linux64
+    - mv /app/fiji/ImageJ-linux64.old /app/fiji/ImageJ-linux64
+
+- name: fiji-cleanup
+  buildsystem: simple
+  build-commands:
+    - rm -rf /app/fiji/jars/linux32 /app/fiji/jars/macosx /app/fiji/jars/win32 /app/fiji/jars/win64
+    # make sure the launcher doesn't create an additional, bad desktop-entry file
+    - touch /app/fiji/ImageJ2.desktop /app/fiji/Fiji.desktop /app/fiji/ImageJ.desktop
+
+- name: fiji-metadata
+  buildsystem: simple
+  build-commands:
+    - install -D sc.fiji.fiji.metainfo.xml /app/share/metainfo/sc.fiji.fiji.metainfo.xml
+    - install -D /app/fiji/images/icon.png /app/share/icons/hicolor/256x256/apps/sc.fiji.fiji.png
+    - install -D sc.fiji.fiji.desktop /app/share/applications/sc.fiji.fiji.desktop
+    - install -D launch-imagej.sh /app/fiji/launch-imagej.sh
+  sources:
+    - type: file
+      path: sc.fiji.fiji.metainfo.xml
+    - type: file
+      path: sc.fiji.fiji.desktop
+    - type: file
+      path: launch-imagej.sh
