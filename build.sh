@@ -1,16 +1,7 @@
 #!/bin/bash
 set -e
 
-if [ "$CI" = "true" ]
-then
-	# Running on CI. Use a base off the home directory.
-	BASE_DIR="$HOME"
-else
-	# Running locally. Use a base in the current directory.
-	BASE_DIR="."
-fi
-
-FIJI_HOME="$BASE_DIR/Fiji.app"
+FIJI_HOME="Fiji.app"
 
 echo
 echo "== Checking whether anything has changed =="
