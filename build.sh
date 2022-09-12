@@ -6,8 +6,7 @@ FIJI_HOME="Fiji.app"
 echo
 echo "== Checking whether anything has changed =="
 
-# the archives-updated script will return 'false' if an update is needed
-up_to_date="$(./archives-updated.sh)"
+up_to_date="$(./fiji-archive-status.sh)"
 
 if [ "$up_to_date" = "up-to-date" ]; then
 	echo "Nothing has changed. No distros will be generated."
