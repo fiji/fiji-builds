@@ -4,9 +4,7 @@ set -e
 echo
 echo "== Checking whether anything has changed =="
 
-up_to_date="$(./fiji-archive-status.sh)"
-
-if [ "$up_to_date" = "up-to-date" ]; then
+if [ "$(./fiji-archive-status.sh)" = "up-to-date" ]; then
 	echo "Nothing has changed. No distros will be generated."
 	exit 0
 fi
