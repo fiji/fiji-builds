@@ -16,7 +16,7 @@ do
 
   # HACK: Move aside non-matching platform-specific JARs.
   # The Fiji Packager doesn't understand them yet; see #4.
-  mv jars/linux32 jars/linux64 jars/win32 jars/win64 jars/macosx ..
+  mv jars/linux64 jars/win32 jars/win64 jars/macosx ..
   mv "../$platform" jars/
 
   java -Dij.dir=. -classpath 'plugins/*:jars/*' fiji.packaging.Packager \
@@ -24,5 +24,5 @@ do
 
   # HACK: Now put them back. :-)
   mv "jars/$platform" ..
-  mv ../linux32 ../linux64 ../win32 ../win64 ../macosx jars/
+  mv ../linux64 ../win32 ../win64 ../macosx jars/
 done
