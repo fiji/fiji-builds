@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-FIJI_HOME="Fiji.app"
-
 echo
 echo "== Checking whether anything has changed =="
 
@@ -14,22 +12,22 @@ if [ "$up_to_date" = "up-to-date" ]; then
 fi
 
 # Initialize the Fiji.app installation if needed.
-if [ ! -d "$FIJI_HOME" ]
+if [ ! -d Fiji.app ]
 then
   echo
   echo "== Building Fiji installation =="
-  ./bootstrap-fiji.sh "$FIJI_HOME" || exit 1
+  ./bootstrap-fiji.sh || exit 1
 fi
 
 # Update the Fiji.app installation.
 echo
 echo "== Updating the Fiji installation =="
-./update-fiji.sh "$FIJI_HOME" || exit 2
+./update-fiji.sh Fiji.app || exit 2
 
 # Bundle up the installation for each platform.
 echo
 echo "== Generating archives =="
-./generate-archives.sh "$FIJI_HOME" || exit 3
+./generate-archives.sh Fiji.app || exit 3
 
 # Upload the application bundles.
 echo
