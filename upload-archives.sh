@@ -14,7 +14,7 @@ upload() {
 
 # Upload files to downloads.imagej.net.
 echo '--> Uploading archives'
-for f in fiji*.zip fiji*.tar.gz
+for f in fiji*.zip
 do
   echo "$f"
   response=$(upload "$f") && echo "$response" | grep -q "Response code 201\." || {
