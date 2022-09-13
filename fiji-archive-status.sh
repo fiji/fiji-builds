@@ -4,11 +4,22 @@
 # recent update to any of the core ImageJ/Fiji update sites, and
 # 'update-needed' otherwise.
 
+DATE=date
+if [ "$(uname)" = "Darwin" ]
+then
+	which gdate >/dev/null || {
+		echo "This script requires GNU date, but macOS uses BSD date."
+		echo "Please install GNU date via 'brew install coreutils'."
+		exit 1
+	}
+	DATE=gdate
+fi
+
 # -- helper methods --
 
 # convert timestamp strings to numeric values for easier comparison
 convert_time () {
-  datenum=$(date --date="$1" '+%s')
+  datenum=$($DATE --date="$1" '+%s')
   echo "$datenum"
 }
 
