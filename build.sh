@@ -2,10 +2,10 @@
 set -e
 
 echo
-echo "== Checking whether anything has changed =="
+echo '== Checking whether anything has changed =='
 
-if [ "$(./fiji-archive-status.sh)" = "up-to-date" ]; then
-  echo "Nothing has changed. No distros will be generated."
+if [ "$(./fiji-archive-status.sh)" = 'up-to-date' ]; then
+  echo 'Nothing has changed. No distros will be generated.'
   exit 0
 fi
 
@@ -13,21 +13,21 @@ fi
 if [ ! -d Fiji.app ]
 then
   echo
-  echo "== Building Fiji installation =="
+  echo '== Building Fiji installation =='
   ./bootstrap-fiji.sh || exit 1
 fi
 
 # Update the Fiji.app installation.
 echo
-echo "== Updating the Fiji installation =="
+echo '== Updating the Fiji installation =='
 ./update-fiji.sh Fiji.app || exit 2
 
 # Bundle up the installation for each platform.
 echo
-echo "== Generating archives =="
+echo '== Generating archives =='
 ./generate-archives.sh Fiji.app || exit 3
 
 # Upload the application bundles.
 echo
-echo "== Transferring artifacts =="
+echo '== Transferring artifacts =='
 ./upload-archives.sh || exit 4

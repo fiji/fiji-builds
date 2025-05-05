@@ -5,10 +5,10 @@
 # 'update-needed' otherwise.
 
 DATE=date
-if [ "$(uname)" = "Darwin" ]
+if [ "$(uname)" = 'Darwin' ]
 then
   which gdate >/dev/null || {
-    echo "This script requires GNU date, but macOS uses BSD date."
+    echo 'This script requires GNU date, but macOS uses BSD date.'
     echo "Please install GNU date via 'brew install coreutils'."
     exit 1
   }
@@ -51,14 +51,14 @@ update_site_modified () {
 
 # get the most recent modification date of a selected fiji bundle
 fiji_bundle_modified () {
-  dateval=$(get_modified_date "https://downloads.imagej.net/fiji/latest/fiji-nojre.zip")
+  dateval=$(get_modified_date 'https://downloads.imagej.net/fiji/latest/fiji-nojre.zip')
   echo "$dateval"
 }
 
 # -- program entry point --
 
 if [ "$(update_site_modified)" -gt "$(fiji_bundle_modified)" ]; then
-  echo "update-needed"
+  echo 'update-needed'
 else
-  echo "up-to-date"
+  echo 'up-to-date'
 fi

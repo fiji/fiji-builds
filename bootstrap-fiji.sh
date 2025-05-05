@@ -3,7 +3,7 @@
 set -e
 
 # Download Fiji.
-echo "--> Downloading and unpacking the latest Fiji as a starting point"
+echo '--> Downloading and unpacking the latest Fiji as a starting point'
 curl -fsO https://downloads.imagej.net/fiji/latest/fiji-nojre.zip &&
 unzip fiji-nojre.zip
 

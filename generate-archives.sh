@@ -2,12 +2,12 @@
 
 dir=$(cd "$(dirname "$0")" && pwd)
 FIJI_HOME=$1
-test -d "$FIJI_HOME" || { echo "[ERROR] Please specify folder for Fiji.app." && exit 1; }
+test -d "$FIJI_HOME" || { echo '[ERROR] Please specify folder for Fiji.app.' && exit 1; }
 cd "$FIJI_HOME"
 
 set -e
 
-echo "--> Creating nojre archive"
+echo '--> Creating nojre archive'
 java -Dij.dir=. -classpath 'plugins/*:jars/*' fiji.packaging.Packager "$dir/fiji-nojre.zip"
 
 for platform in linux64 win32 win64 macosx
