@@ -1,8 +1,17 @@
-#!/bin/bash
+#!/bin/sh
 
-# Emits 'up-to-date' if a Fiji app bundle has been created since the most
-# recent update to any of the core ImageJ/Fiji update sites, and
-# 'update-needed' otherwise.
+. "${0%/*}/common.include"
+
+# Emits 'up-to-date' if a Fiji app bundle has been created since the
+# most recent update to any of the core ImageJ/Fiji update sites,
+# and 'update-needed' otherwise.
+
+track=$1
+case "$track" in
+  latest) sites='update.imagej.net update.fiji.sc sites.imagej.net/Java-8' ;;
+  stable) sites='sites.imagej.net/Fiji' ;;
+  *) echo "Usage: $0 latest|stable"; exit 1 ;;
+esac
 
 DATE=date
 if [ "$(uname)" = 'Darwin' ]
@@ -34,11 +43,7 @@ get_modified_date () {
 # get the most recent modification date from among the core ImageJ/Fiji update sites
 update_site_modified () {
   update_site_times=()
-  for repo in \
-    update.imagej.net       \
-    update.fiji.sc          \
-    sites.imagej.net/Java-8
-  do
+  for repo in $sites; do
     dateval=$(get_modified_date "https://$repo/db.xml.gz")
     update_site_times+=("$dateval")
   done
@@ -51,7 +56,7 @@ update_site_modified () {
 
 # get the most recent modification date of a selected fiji bundle
 fiji_bundle_modified () {
-  dateval=$(get_modified_date 'https://downloads.imagej.net/fiji/latest/fiji-nojre.zip')
+  dateval=$(get_modified_date "https://downloads.imagej.net/fiji/$track/fiji-nojre.zip")
   echo "$dateval"
 }
 

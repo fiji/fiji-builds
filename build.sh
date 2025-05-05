@@ -1,33 +1,42 @@
-#!/bin/bash
+#!/bin/sh
+
 set -e
+
+for track in latest stable; do
+
+echo
+echo '/-----------------\'
+echo "| BUILDING $track |"
+echo '\-----------------/'
 
 echo
 echo '== Checking whether anything has changed =='
 
-if [ "$(./fiji-archive-status.sh)" = 'up-to-date' ]; then
+if [ "$(./fiji-archive-status.sh "$track")" = 'up-to-date' ]; then
   echo 'Nothing has changed. No distros will be generated.'
   exit 0
 fi
 
-# Initialize the Fiji.app installation if needed.
-if [ ! -d Fiji.app ]
-then
+# Initialize the Fiji installation if needed.
+if [ ! -d "$fiji_dir" ]; then
   echo
   echo '== Building Fiji installation =='
-  ./bootstrap-fiji.sh || exit 1
+  ./bootstrap-fiji.sh "$track" || exit 1
 fi
 
-# Update the Fiji.app installation.
+# Update the Fiji installation.
 echo
 echo '== Updating the Fiji installation =='
-./update-fiji.sh Fiji.app || exit 2
+./update-fiji.sh "$fiji_dir" || exit 2
 
 # Bundle up the installation for each platform.
 echo
 echo '== Generating archives =='
-./generate-archives.sh Fiji.app || exit 3
+./generate-archives.sh "$fiji_dir" || exit 3
 
 # Upload the application bundles.
 echo
 echo '== Transferring artifacts =='
 ./upload-archives.sh || exit 4
+
+done

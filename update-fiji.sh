@@ -1,7 +1,9 @@
 #!/bin/sh
 
+. "${0%/*}/common.include"
+
 FIJI_HOME=$1
-test "$FIJI_HOME" || { echo '[ERROR] Please specify folder for Fiji.app.' && exit 1; }
+test "$FIJI_HOME" || { echo '[ERROR] Please specify Fiji folder.' && exit 1; }
 
 case "$(uname -s),$(uname -m)" in
   Linux,x86_64) launcher=ImageJ-linux64 ;;

@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# Commonly useful constants and functions. Include via:
+#
+#     . "${0%/*}/common.include"
+
+set -e
+
+track=$1
+case "$track" in
+  latest)
+    platforms='linux-arm64 linux64 macos-arm64 macosx win-arm64 win64'
+    fiji_dir=Fiji
+    ;;
+  stable)
+    platforms='linux64 win32 win64 macosx'
+    fiji_dir=Fiji.app
+    ;;
+  *)
+    echo "Usage: $0 latest|stable"
+    exit 1
+    ;;
+esac
+
+cd "$(dirname "$0")"

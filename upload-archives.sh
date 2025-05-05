@@ -1,5 +1,7 @@
 #!/bin/sh
 
+. "${0%/*}/common.include"
+
 test "$WEBDAV_USER" -a "$WEBDAV_PASS" || {
   echo '[ERROR] No WebDAV credentials in environment. Skipping upload.'
   exit 2
