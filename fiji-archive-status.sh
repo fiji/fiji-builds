@@ -7,12 +7,12 @@
 DATE=date
 if [ "$(uname)" = "Darwin" ]
 then
-	which gdate >/dev/null || {
-		echo "This script requires GNU date, but macOS uses BSD date."
-		echo "Please install GNU date via 'brew install coreutils'."
-		exit 1
-	}
-	DATE=gdate
+  which gdate >/dev/null || {
+    echo "This script requires GNU date, but macOS uses BSD date."
+    echo "Please install GNU date via 'brew install coreutils'."
+    exit 1
+  }
+  DATE=gdate
 fi
 
 # -- helper methods --

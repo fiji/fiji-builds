@@ -5,8 +5,8 @@ echo
 echo "== Checking whether anything has changed =="
 
 if [ "$(./fiji-archive-status.sh)" = "up-to-date" ]; then
-	echo "Nothing has changed. No distros will be generated."
-	exit 0
+  echo "Nothing has changed. No distros will be generated."
+  exit 0
 fi
 
 # Initialize the Fiji.app installation if needed.
