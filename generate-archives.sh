@@ -8,12 +8,12 @@ test -d "$fiji_dir" || {
 }
 cd "$fiji_dir"
 
-echo '--> Creating nojre archive'
-java -Dij.dir=. -classpath 'plugins/*:jars/*' fiji.packaging.Packager ../fiji-nojre.zip
+echo "--> Creating $track nojre archive"
+java -Dij.dir=. -classpath 'plugins/*:jars/*' fiji.packaging.Packager ../fiji-$track-nojre.zip
 
 for platform in $platforms
 do
-  echo "--> Generating archive for $platform"
+  echo "--> Generating $track $platform archive"
 
   # HACK: Move aside non-matching platform-specific JARs.
   # The Fiji Packager doesn't understand them yet; see #4.
@@ -23,7 +23,7 @@ do
   mv "../$platform" jars/
 
   java -Dij.dir=. -classpath 'plugins/*:jars/*' fiji.packaging.Packager \
-    --platforms=$platform --jre "$dir/fiji-$platform.zip"
+    --platforms=$platform --jre "$dir/fiji-$track-$platform.zip"
 
   # HACK: Now put them back. :-)
   mv "jars/$platform" ..

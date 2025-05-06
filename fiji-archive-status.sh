@@ -2,14 +2,14 @@
 
 . "${0%/*}/common.include"
 
-# Emits 'up-to-date' if a Fiji app bundle has been created since the
-# most recent update to any of the core ImageJ/Fiji update sites,
+# Emits 'up-to-date' if a Fiji app bundle has been created since
+# the most recent update to the core ImageJ/Fiji update sites,
 # and 'update-needed' otherwise.
 
 track=$1
 case "$track" in
-  latest) sites='update.imagej.net update.fiji.sc sites.imagej.net/Java-8' ;;
-  stable) sites='sites.imagej.net/Fiji' ;;
+  latest) sites='sites.imagej.net/Fiji' ;;
+  stable) sites='update.imagej.net update.fiji.sc sites.imagej.net/Java-8' ;;
   *) echo "Usage: $0 latest|stable"; exit 1 ;;
 esac
 
