@@ -9,11 +9,11 @@ set -e
 track=$1
 case "$track" in
   latest)
-    platforms='linux-arm64 linux64 macos-arm64 macosx win-arm64 win64'
+    platforms='linux-arm64 linux-x64 macos-arm64 macos-x64 windows-x64'
     fiji_dir=Fiji
     ;;
   stable)
-    platforms='linux64 win32 win64 macosx'
+    platforms='linux64 macosx win32 win64'
     fiji_dir=Fiji.app
     ;;
   *)
@@ -23,3 +23,10 @@ case "$track" in
 esac
 
 cd "$(dirname "$0")"
+
+verify_fiji_dir() {
+  test -d "$fiji_dir" || {
+    echo "[ERROR] Fiji folder '$fiji_dir' does not exist."
+    exit 1
+  }
+}
