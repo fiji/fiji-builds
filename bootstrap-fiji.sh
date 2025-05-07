@@ -11,11 +11,8 @@ unzip fiji-nojre.zip
 rm fiji-nojre.zip
 
 # CTR START HERE:
-# use JDK locations from https://downloads.imagej.net/java/jdk-urls.txt
-# and stop the binaries hosted at https://downloads.imagej.net/java/
-# But what about jdk-urls.txt vs jdk-urls-stable.txt ?
-# or do we want two sets of key-value pairs in jdk-urls.txt ?
-# whatever we use for stable needs to be ignored by the imagej-updater logic.
+# Get JDK locations from downloads.imagej.net/java manifests.
+jdks=$(curl -fs "https://downloads.imagej.net/java/jdk-$track.txt")
 
 # For latest track, rename fiji-nojre to fiji-all-platforms.
 # Easiest way to let Jaunch download Java? Ship Python and use cjdk! :D
