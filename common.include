@@ -10,10 +10,12 @@ track=$1
 case "$track" in
   latest)
     platforms='linux-arm64 linux-x64 macos-arm64 macos-x64 windows-x64'
+    bootstrap=fiji-portable-nojava
     fiji_dir=Fiji
     ;;
   stable)
     platforms='linux64 macosx win32 win64'
+    bootstrap=fiji-stable-portable-nojava
     fiji_dir=Fiji.app
     ;;
   *)

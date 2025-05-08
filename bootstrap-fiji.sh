@@ -4,9 +4,9 @@
 
 # Download portable Fiji distribution as a starting point.
 echo "--> Downloading and unpacking $track Fiji as a starting point"
-curl -fsO "https://downloads.imagej.net/fiji/$track/fiji-$fiji_portable.zip" &&
-unzip "fiji-$fiji_portable.zip"
-rm "fiji-$fiji_portable.zip"
+curl -fsO "https://downloads.imagej.net/fiji/$track/$bootstrap.zip" &&
+unzip "$bootstrap.zip"
+rm "$bootstrap.zip"
 
 # Download the manifests of current JDK/JRE locations.
 echo "--> Downloading bundled JDK/JRE manifests"
@@ -20,14 +20,6 @@ do
   case "$track:$platform" in
     stable:linux64) java=linux-amd64 ;;
     *) java=$platform ;;
-  esac
-
-  # $jarslib - subfolder of jars/ and lib/ for platform-specific files.
-  case "$platform" in
-    linux-x64) jarslib=linux64 ;;
-    macos-x64) jarslib=macosx ;;
-    windows-x64) jarslib=win64 ;;
-    *) jarslib=$platform ;;
   esac
 
   javaDir="$fiji_dir/java/$java"

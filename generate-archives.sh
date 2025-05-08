@@ -9,11 +9,33 @@ mv "$fiji_dir/java" .
 zip -r9y "fiji-$track-portable-nojava.zip" "$fiji_dir"
 mv java "$fiji_dir"
 
+move_aside() {
+  dir=$1
+
+  mkdir -p "$dir"
+  cd "$fiji_dir/$dir"
+
+  # Map long platform name to short platform name.
+  for p in $platforms
+  case "$p" in
+    linux-x64) p=linux64 ;;
+    macos-x64) p=macosx ;;
+    windows-x64) p=win64 ;;
+  esac
+
+  if [ -d "$p" ]; then
+    mv "$p" "../../$dir/"
+  fi
+}
+
+move_aside jars
+move_aside lib
+
 for platform in $platforms
 do
   echo "--> Generating $track $platform archive"
 
-  # CTR START HERE -- messy...
+  # CTR START HERE
 
   # $java - subfolder of java/ for platform-specific bundled Java.
   case "$track:$platform" in
@@ -21,19 +43,12 @@ do
     *) java=$platform ;;
   esac
 
-  # $jarslib - subfolder of jars/ and lib/ for platform-specific files.
-  case "$platform" in
-    linux-x64) jarslib=linux64 ;;
-    macos-x64) jarslib=macosx ;;
-    windows-x64) jarslib=win64 ;;
-    *) jarslib=$platform ;;
-  esac
-
   # Move aside non-matching platform-specific files.
+  mkdir -p jars lib
   cd "$fiji_dir/jars"
-  mv $platforms ../..
+  mv $platforms ../../jars/
   cd ../..
-  mv "$platform" "$fiji_dir/jars/"
+  mv "jars/$platform/" "$fiji_dir/jars/"
 
   zip -r9y "fiji-$track-$platform-$jdkjre.zip"
 
