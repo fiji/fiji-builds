@@ -8,4 +8,11 @@ case "$(uname)" in
 esac
 
 DEBUG=1 "$fiji_dir/$launcher" --update update-force-pristine
-# CHECK - are fiji and fiji.bat still present afterward?
+
+# Remove obsolete fiji launcher wrappers.
+rm -rf \
+  "$fiji_dir/Contents/MacOS/fiji-macosx" \
+  "$fiji_dir/Contents/MacOS/fiji-tiger" \
+  "$fiji_dir/fiji-linux64" \
+  "$fiji_dir/fiji-win32.exe" \
+  "$fiji_dir/fiji-win64.exe"

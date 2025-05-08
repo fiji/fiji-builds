@@ -34,9 +34,9 @@ echo
 echo '== Generating archives =='
 ./generate-archives.sh "$track" || exit 3
 
+done
+
 # Upload the application bundles.
 echo
 echo '== Transferring artifacts =='
 ./upload-archives.sh || exit 4
-
-done
