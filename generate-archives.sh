@@ -5,9 +5,11 @@
 verify_fiji_dir
 
 echo "--> Generating $track portable archive"
-mv "$fiji_dir/java" .
+if [ -e "$fiji_dir/java" ]; then
+  echo "[ERROR] Unexpected $fiji_dir/java folder!"
+  exit 1
+fi
 zip -r9y "fiji-$track-portable-nojava.zip" "$fiji_dir"
-mv java "$fiji_dir"
 
 move_aside() {
   dir=$1
