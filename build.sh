@@ -27,12 +27,12 @@ fi
 # Update the Fiji installation.
 echo
 echo '== Updating the Fiji installation =='
-./update-fiji.sh "$fiji_dir" || exit 2
+./update-fiji.sh "$track" || exit 2
 
 # Bundle up the installation for each platform.
 echo
 echo '== Generating archives =='
-./generate-archives.sh "$fiji_dir" || exit 3
+./generate-archives.sh "$track" || exit 3
 
 # Upload the application bundles.
 echo
