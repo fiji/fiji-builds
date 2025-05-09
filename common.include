@@ -89,3 +89,19 @@ DOC
     *)              echo "$javaDir"  ;;
   esac
 }
+
+launchers() {
+  : << 'DOC'
+Get the list of native launchers to include for a given track + platform.
+DOC
+  track=$1
+  platform=$2
+  short=$(short_platform "$platform")
+  long=$(long_platform "$platform")
+  case "$track:$short" in)
+    latest:macos*) echo 'Fiji.app/'                ;;
+    stable:macos*) echo 'Contents/ Fiji.app/'      ;;
+    latest:*)      echo "fiji-$long"               ;;
+    stable:*)      echo "fiji-$long ImageJ-$short" ;;
+  esac
+}

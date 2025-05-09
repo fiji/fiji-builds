@@ -11,7 +11,16 @@ if [ -e "$fiji_dir/java" ]; then
 fi
 zip -r9y "fiji-$track-portable-nojava.zip" "$fiji_dir"
 
-move_aside() {
+move_file() {
+  src_file=$1
+  dest_dir=$2
+  if [ -e "$src_file" ]; then
+    mkdir -p "$dest_dir"
+    mv "$src_file" "$dest_dir/"
+  fi
+}
+
+move_dir_aside() {
   dir=$1
   mkdir -p "$dir"
   mv "$fiji_dir/$dir/"*/ "$dir/"
@@ -19,7 +28,7 @@ move_aside() {
   test ! -e "$dir/bio-formats" || mv "$dir/bio-formats" "$fiji_dir/$dir/"
 }
 
-move_into_place() {
+move_dir_into_place() {
   platform=$1
   dir=$2
   mv "$dir/$platform/" "$fiji_dir/$dir/"
@@ -30,21 +39,27 @@ for platform in $platforms
 do
   echo "--> Generating $track $platform archive"
 
-  move_aside jars
-  move_aside lib
-  move_into_place "$platform" jars
-  move_into_place "$platform" lib
+  move_dir_aside jars
+  move_dir_aside lib
+  move_dir_into_place "$platform" jars/
+  move_dir_into_place "$platform" lib
 
-  # CTR START HERE - also handle all the launchers, old and new.
-  # move_aside launchers
-  # move_into_place "$platform" launchers
+  # Move aside launchers for all platforms.
+  for launcher in "$fiji_dir/Contents" "$fiji_dir/Fiji.app" "$fiji_dir"/ImageJ-* "$fiji_dir"/fiji-*; do
+    move_file "$launcher" $track-launchers
+  done
+  # CTR START HERE - also cover config/jaunch/jaunch-*
+  # Move correct platform launchers back into place.
+  for launcher in $(launchers "$track" "$platform"); do
+    mv "$track-launchers/$launcher" "$fiji_dir/"
+  done
 
+  javaDir=$(java_dir "$track" "$platform")
   for jtype in jdk jre; do 
-    # Move correct JDK/JRE into place.
-    mv "$jtype-$track/$platform/" "$fiji_dir/java/"
+    # Shuffle in the correct Java bundle before archiving.
+    mv "$jtype-$track/$platform/" "$fiji_dir/java/$javaDir"
     zip -r9y "fiji-$track-$platform-$jtype.zip"
-    # Now shuffle the JDK/JRE back out again.
-    mv "$fiji_dir/java/$platform/" "$jtype-$track/"
+    mv "$fiji_dir/java/$javaDir/" "$jtype-$track/$platform"
   done
 done
 
