@@ -19,7 +19,7 @@ for platform in $platforms; do
     else
       javaURL=$(grep "^$javaDir=" "$javaBundle.txt" | sed 's/[^=]*=//')
       if [ "$javaURL" ]; then
-        echo "--> Downloading and installing $javaBundle for $platform"
+        echo "--> Downloading and unpacking $javaBundle for $platform"
         mkdir -p "$targetDir"
         (
           cd "$targetDir"

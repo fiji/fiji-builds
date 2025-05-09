@@ -13,50 +13,41 @@ zip -r9y "fiji-$track-portable-nojava.zip" "$fiji_dir"
 
 move_aside() {
   dir=$1
-
   mkdir -p "$dir"
-  cd "$fiji_dir/$dir"
-
-  # Map long platform name to short platform name.
-  for p in $platforms
-  case "$p" in
-    linux-x64) p=linux64 ;;
-    macos-x64) p=macosx ;;
-    windows-x64) p=win64 ;;
-  esac
-
-  if [ -d "$p" ]; then
-    mv "$p" "../../$dir/"
-  fi
+  mv "$fiji_dir/$dir/"*/ "$dir/"
+  # HACK: Restore non-platform-specific bio-formats folder if present.
+  test ! -e "$dir/bio-formats" || mv "$dir/bio-formats" "$fiji_dir/$dir/"
 }
 
-move_aside jars
-move_aside lib
+move_into_place() {
+  platform=$1
+  dir=$2
+  mv "$dir/$platform/" "$fiji_dir/$dir/"
+}
 
+mkdir -p "$fiji_dir/java"
 for platform in $platforms
 do
   echo "--> Generating $track $platform archive"
 
-  # CTR START HERE
+  move_aside jars
+  move_aside lib
+  move_into_place "$platform" jars
+  move_into_place "$platform" lib
 
-  # $java - subfolder of java/ for platform-specific bundled Java.
-  case "$track:$platform" in
-    stable:linux64) java=linux-amd64 ;;
-    *) java=$platform ;;
-  esac
+  # CTR START HERE - also handle all the launchers, old and new.
+  # move_aside launchers
+  # move_into_place "$platform" launchers
 
-  # Move aside non-matching platform-specific files.
-  mkdir -p jars lib
-  cd "$fiji_dir/jars"
-  mv $platforms ../../jars/
-  cd ../..
-  mv "jars/$platform/" "$fiji_dir/jars/"
-
-  zip -r9y "fiji-$track-$platform-$jdkjre.zip"
-
-  # Now put everything back.
-  mv "jars/$platform" ..
-  cd ..
-  mv $platforms "$fiji_dir/jars/"
-  cd "$fiji_dir"
+  for jtype in jdk jre; do 
+    # Move correct JDK/JRE into place.
+    mv "$jtype-$track/$platform/" "$fiji_dir/java/"
+    zip -r9y "fiji-$track-$platform-$jtype.zip"
+    # Now shuffle the JDK/JRE back out again.
+    mv "$fiji_dir/java/$platform/" "$jtype-$track/"
+  done
 done
+
+move_aside jars
+move_aside lib
+rmdir "$fiji_dir/java/"
