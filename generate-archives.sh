@@ -24,9 +24,9 @@ move_dir_aside() {
   dir=$1
   echo "+ move_dir_aside '$dir'"
   mkdir -p "$dir"
-  move_file "$fiji_dir/$dir/"*/ "$track-$dir/"
+  move_file "$fiji_dir/$dir/"*/ "$track-$dir"
   # HACK: Restore non-platform-specific bio-formats folder if present.
-  move_file "$track-$dir/bio-formats/" "$fiji_dir/$dir/"
+  move_file "$track-$dir/bio-formats/" "$fiji_dir/$dir"
 }
 
 # Move all platform-specific files aside.
@@ -37,7 +37,7 @@ for launcher in \
   "$fiji_dir"/ImageJ-* "$fiji_dir"/fiji-* \
   "$fiji_dir"/config/jaunch/jaunch-*
 do
-  move_file "$launcher" "$track-launchers/"
+  move_file "$launcher" "$track-launchers"
 done
 
 mkdir -p "$fiji_dir/java"
@@ -46,8 +46,8 @@ for platform in $platforms; do
   echo "--> Generating $track $platform archive"
 
   # Move matching platform-specific files back into place.
-  move_file "$track-jars/$platform/" "$fiji_dir/jars/"
-  move_file "$track-lib/$platform/" "$fiji_dir/lib/"
+  move_file "$track-jars/$platform/" "$fiji_dir/jars"
+  move_file "$track-lib/$platform/" "$fiji_dir/lib"
   for launcher in $(launchers "$track" "$platform"); do
     subDir=${launcher%/*}
     test "$launcher" != "$subDir" || subDir=
