@@ -107,3 +107,5 @@ DOC
     stable:*) echo "fiji-$long config/jaunch/jaunch-$long ImageJ-$short" ;;
   esac
 }
+
+notify() { printf "\e[0;33m--> $@\e[0m\n"; }

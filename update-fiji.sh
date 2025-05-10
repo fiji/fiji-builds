@@ -7,7 +7,12 @@ case "$(uname)" in
   *) launcher=fiji ;;
 esac
 
-DEBUG=1 "$fiji_dir/$launcher" --update update-force-pristine
+# Invoke the command-line Updater.
+if [ -d "$JAVA_HOME" ]; then
+  DEBUG=1 "$fiji_dir/$launcher" --java-home "$JAVA_HOME" --update update-force-pristine
+else
+  DEBUG=1 "$fiji_dir/$launcher" --update update-force-pristine
+fi
 
 # Remove obsolete fiji launcher wrappers.
 rm -rf \
@@ -18,5 +23,5 @@ rm -rf \
   "$fiji_dir/fiji-win64.exe"
 
 # Remove any backup launcher-related files.
-find . -name '*.old' -exec rm "{}" \;
-find . -name '*.old.exe' -exec rm "{}" \;
+find . -name '*.old' -exec rm -rf "{}" \;
+find . -name '*.old.exe' -exec rm -rf "{}" \;
