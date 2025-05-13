@@ -88,4 +88,7 @@ for platform in $platforms; do
 done
 
 # Clean up.
-rmdir "$fiji_dir/java/"
+mv "$track-launchers"/* "$fiji_dir/"
+mv "$track-jars"/* "$fiji_dir/jars/"
+mv "$track-lib"/* "$fiji_dir/lib/"
+rmdir "$fiji_dir/java/" "$track-launchers" "$track-jars" "$track-lib"
