@@ -94,6 +94,7 @@ for platform in $platforms; do
 done
 
 # Clean up.
+mv "$track-launchers"/jaunch* "$fiji_dir/config/jaunch/"
 mv "$track-launchers"/* "$fiji_dir/"
 mv "$track-jars"/* "$fiji_dir/jars/"
 mv "$track-lib"/* "$fiji_dir/lib/"
