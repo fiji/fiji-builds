@@ -59,6 +59,12 @@ for platform in $platforms; do
   # Move matching platform-specific files back into place.
   move_file "$track-jars/$platform/" "$fiji_dir/jars"
   move_file "$track-lib/$platform/" "$fiji_dir/lib"
+  case "$platform" in
+    macos*)
+      move_file "$track-jars/macosx/" "$fiji_dir/jars"
+      move_file "$track-lib/macosx/" "$fiji_dir/lib"
+      ;;
+  esac
   for launcher in $(launchers "$track" "$platform"); do
     subDir=${launcher%/*}
     srcFile=${launcher##*/}

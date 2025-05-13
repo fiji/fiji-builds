@@ -9,7 +9,7 @@ set -e
 track="$1"
 case "$track" in
   latest)
-    platforms='linux-arm64 linux64 macos-arm64 macosx win64'
+    platforms='linux-arm64 linux64 macos-arm64 macos64 win64'
     fiji_nojava=fiji-portable-nojava
     fiji_dir=Fiji
     ;;
@@ -44,7 +44,7 @@ DOC
     linux-x32|linux32|linux) echo linux-x32     ;;
     linux-x64|linux64)       echo linux-x64     ;;
     macos-arm64)             echo macos-arm64   ;;
-    macos-x64|macosx)        echo macos-x64     ;;
+    macos-x64|macos64)       echo macos-x64     ;;
     windows-arm64|win-arm64) echo windows-arm64 ;;
     windows-x32|win32)       echo windows-x32   ;;
     windows-x64|win64)       echo windows-x64   ;;
@@ -63,7 +63,7 @@ DOC
     linux-x32)     echo linux32     ;;
     linux-x64)     echo linux64     ;;
     macos-arm64)   echo macos-arm64 ;;
-    macos-x64)     echo macosx      ;;
+    macos-x64)     echo macos64     ;;
     windows-arm64) echo win-arm64   ;;
     windows-x32)   echo win32       ;;
     windows-x64)   echo win64       ;;
