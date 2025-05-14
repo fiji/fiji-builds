@@ -5,18 +5,8 @@ and 301 redirects for old 'latest' archive names into equivalent stable names.
 301 redirect downloads.imagej.net/fiji/future/ -> downloads.imagej.net/fiji/latest/
 -------------------
 
-TO DO NEXT:
-- Set all of Fiji.app to macosx (since macosx is now a platform group).
-- Update jdk-latest.txt and jre-latest.txt to use macos64, not macosx, for macos-x64.
-- Update generate-archives.sh to special-case the macosx platform group folder correctly.
-- Then generate the fiji-latest-*.zip bundles and upload all bundles to fiji/future/.
-- Then ask LOCI Fiji team to test for all platforms they can access.
-- Fix identified problems, and repeat until all known problems are fixed.
-- Then invite the Image.sc community to test the bundles.
-^^^^ START HERE
-- generating stable works now.
-- we need to ship jars/macosx with macos-arm64 distro, because it contains both arches.
-- we need to ship *all* of Fiji.app for *both* macosx and macos-arm64
-- macosx = universal
-- macos-arm64 = Apple silicon only
-- macos64 = Intel only
+ANNOUNCEMENT:
+- Java-21-based Fiji bundles now available
+- new unified Fiji-Latest update site
+- macosx platform group change
+- Invite the Image.sc community to test the bundles.
