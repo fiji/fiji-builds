@@ -10,7 +10,7 @@ track="$1"
 case "$track" in
   latest)
     platforms='linux-arm64 linux64 macos-arm64 macos64 win64'
-    fiji_nojava=fiji-portable-nojava
+    fiji_nojava=fiji-latest-portable-nojava
     fiji_dir=Fiji
     ;;
   stable)
