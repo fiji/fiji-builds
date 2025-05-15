@@ -24,15 +24,19 @@ if [ ! -d "$fiji_dir" ]; then
   ./bootstrap-fiji.sh "$track" || exit 1
 fi
 
-# Update the Fiji installation.
-echo
-echo '== Updating the Fiji installation =='
-./update-fiji.sh "$track" || exit 2
-
 # Download the Java bundles.
 echo
 echo '== Downloading Java bundles =='
-./download-javas.sh "$track" || exit 3
+./download-javas.sh "$track" || exit 2
+
+# Use JDK matching the current track.
+export JAVA_HOME=$(find "jdk-$track/linux64" \
+  -mindepth 1 -maxdepth 1 -type d | head -n1)
+
+# Update the Fiji installation.
+echo
+echo '== Updating the Fiji installation =='
+./update-fiji.sh "$track" || exit 3
 
 # Bundle up the installation for each platform.
 echo
