@@ -2,6 +2,7 @@
 
 This repository creates the Fiji downloadable bundles available from:
 
-* https://downloads.imagej.net/fiji/archive/
 * https://downloads.imagej.net/fiji/latest/
 * https://downloads.imagej.net/fiji/stable/
+* https://downloads.imagej.net/fiji/archive/latest/
+* https://downloads.imagej.net/fiji/archive/stable/
