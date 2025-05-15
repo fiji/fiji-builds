@@ -1,5 +1,7 @@
 #!/bin/sh
 
+. "${0%/*}/common.include"
+
 test "$WEBDAV_USER" -a "$WEBDAV_PASS" || {
   echo '[ERROR] No WebDAV credentials in environment. Skipping upload.'
   exit 2
@@ -13,8 +15,8 @@ upload() {
 }
 
 # Upload files to downloads.imagej.net.
-echo '--> Uploading archives'
-for f in fiji*.zip
+echo "--> Uploading $track archives"
+for f in fiji-"$track"-*.zip
 do
   echo "$f"
   response=$(upload "$f") && echo "$response" | grep -q 'Response code 201\.' || {
@@ -25,5 +27,5 @@ done
 
 # Mark the upload as complete.
 echo '--> Marking upload complete'
-date > fiji-uploaded.txt
-upload fiji-uploaded.txt >/dev/null
+date > fiji-"$track"-uploaded.txt
+upload fiji-"$track"-uploaded.txt >/dev/null

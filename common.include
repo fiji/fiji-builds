@@ -1,0 +1,111 @@
+#!/bin/sh
+
+# Commonly useful constants and functions. Include via:
+#
+#     . "${0%/*}/common.include"
+
+set -e
+
+track="$1"
+case "$track" in
+  latest)
+    platforms='linux-arm64 linux64 macos-arm64 macos64 win64'
+    fiji_nojava=fiji-latest-portable-nojava
+    fiji_dir=Fiji
+    ;;
+  stable)
+    platforms='linux64 macosx win32 win64'
+    fiji_nojava=fiji-stable-portable-nojava
+    fiji_dir=Fiji.app
+    ;;
+  *)
+    echo "Usage: $0 latest|stable"
+    exit 1
+    ;;
+esac
+
+cd "$(dirname "$0")"
+
+verify_fiji_dir() {
+  test -d "$fiji_dir" || {
+    echo "[ERROR] Fiji folder '$fiji_dir' does not exist."
+    exit 1
+  }
+}
+
+long_platform() {
+  : << 'DOC'
+Get the long platform name, used for Jaunch-based launcher
+filename suffixes and Fiji downloadable archive filenames.
+DOC
+  platform=$1
+  case "$platform" in
+    linux-arm64)             echo linux-arm64   ;;
+    linux-x32|linux32|linux) echo linux-x32     ;;
+    linux-x64|linux64)       echo linux-x64     ;;
+    macos-arm64)             echo macos-arm64   ;;
+    macos-x64|macos64)       echo macos-x64     ;;
+    windows-arm64|win-arm64) echo windows-arm64 ;;
+    windows-x32|win32)       echo windows-x32   ;;
+    windows-x64|win64)       echo windows-x64   ;;
+    *)                       echo "$platform"   ;;
+  esac
+}
+
+short_platform() {
+  : << 'DOC'
+Get the short platform name, used for platform-specific
+subdirectories beneath the jars and lib folders.
+DOC
+  platform=$(long_platform "$1")
+  case "$platform" in
+    linux-arm64)   echo linux-arm64 ;;
+    linux-x32)     echo linux32     ;;
+    linux-x64)     echo linux64     ;;
+    macos-arm64)   echo macos-arm64 ;;
+    macos-x64)     echo macos64     ;;
+    windows-arm64) echo win-arm64   ;;
+    windows-x32)   echo win32       ;;
+    windows-x64)   echo win64       ;;
+    *)             echo "$platform" ;;
+  esac
+}
+
+java_dir() {
+  : << 'DOC'
+Get the platform-specific subdirectory beneath
+Fiji/java where JDK/JRE installations should reside.
+This almost completely coincides with the short platform name,
+with the exception of linux32 and linux64 in Fiji stable.
+DOC
+  track=$1
+  platform=$2
+  javaDir=$(short_platform "$platform")
+  case "$track:$javaDir" in
+    # The old ImageJ Launcher expects one of these folders:
+    #        linux, linux-amd64, macosx, win32, win64
+    stable:linux32) echo linux       ;;
+    stable:linux64) echo linux-amd64 ;;
+    *)              echo "$javaDir"  ;;
+  esac
+}
+
+launchers() {
+  : << 'DOC'
+Get the list of native launchers to include for a given track + platform.
+DOC
+  track=$1
+  platform=$2
+  short=$(short_platform "$platform")
+  long=$(long_platform "$platform")
+  case "$track:$short" in
+    latest:macos*) echo 'Fiji.app' ;;
+    stable:macos*) echo 'Contents Fiji.app' ;;
+    latest:win*) echo "fiji-$long.exe config/jaunch/jaunch-$long.exe" ;;
+    stable:win*) echo "fiji-$long.exe config/jaunch/jaunch-$long.exe ImageJ-$short.exe" ;;
+    latest:*) echo "fiji-$long config/jaunch/jaunch-$long" ;;
+    stable:*) echo "fiji-$long config/jaunch/jaunch-$long ImageJ-$short" ;;
+  esac
+}
+
+notify() { printf "\e[0;33m--> $@\e[0m\n"; }

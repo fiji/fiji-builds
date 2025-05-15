@@ -1,0 +1,12 @@
+301 redirect for old archive datestamps
+https://downloads.imagej.net/fiji/archive/[0-9]* -> stable/
+and 301 redirects for old 'latest' archive names into equivalent stable names.
+
+301 redirect downloads.imagej.net/fiji/future/ -> downloads.imagej.net/fiji/latest/
+-------------------
+
+ANNOUNCEMENT:
+- Java-21-based Fiji bundles now available
+- new unified Fiji-Latest update site
+- macosx platform group change
+- Invite the Image.sc community to test the bundles.

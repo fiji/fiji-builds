@@ -1,28 +1,101 @@
 #!/bin/sh
 
-dir=$(cd "$(dirname "$0")" && pwd)
-FIJI_HOME=$1
-test -d "$FIJI_HOME" || { echo '[ERROR] Please specify folder for Fiji.app.' && exit 1; }
-cd "$FIJI_HOME"
+. "${0%/*}/common.include"
 
-set -e
+verify_fiji_dir
 
-echo '--> Creating nojre archive'
-java -Dij.dir=. -classpath 'plugins/*:jars/*' fiji.packaging.Packager "$dir/fiji-nojre.zip"
+move_file() {
+  src_file=$1
+  dest_dir=$2
+  if [ -e "$src_file" ]; then
+    mkdir -p "$dest_dir"
+    (set -x; mv "$src_file" "$dest_dir/")
+  fi
+}
 
-for platform in linux64 win32 win64 macosx
+move_dir_aside() {
+  dir=$1
+  mkdir -p "$dir"
+  for f in "$fiji_dir/$dir/"*/; do
+    move_file "$f" "$track-$dir"
+  done
+  # HACK: Restore non-platform-specific bio-formats folder if present.
+  move_file "$track-$dir/bio-formats/" "$fiji_dir/$dir"
+}
+
+create_archive() {
+  suffix=$1
+  archive="fiji-$track-$suffix.zip"
+  if [ ! -e "$archive" ]; then
+    (set -x; zip -r9yq "$archive" "$fiji_dir")
+  else
+    echo "Skipping $suffix: archive already exists."
+  fi
+}
+
+if [ -e "$fiji_dir/java" ]; then
+  echo "[ERROR] Unexpected $fiji_dir/java folder!"
+  exit 1
+fi
+notify "Generating $track portable archive"
+create_archive portable-nojava
+
+notify "Setting aside platform-specific files"
+move_dir_aside jars
+move_dir_aside lib
+for launcher in \
+  "$fiji_dir/Contents" "$fiji_dir/Fiji.app" \
+  "$fiji_dir"/ImageJ-* "$fiji_dir"/fiji-* \
+  "$fiji_dir"/config/jaunch/jaunch-*
 do
-  echo "--> Generating archive for $platform"
-
-  # HACK: Move aside non-matching platform-specific JARs.
-  # The Fiji Packager doesn't understand them yet; see #4.
-  mv jars/linux64 jars/win32 jars/win64 jars/macosx ..
-  mv "../$platform" jars/
-
-  java -Dij.dir=. -classpath 'plugins/*:jars/*' fiji.packaging.Packager \
-    --platforms=$platform --jre "$dir/fiji-$platform.zip"
-
-  # HACK: Now put them back. :-)
-  mv "jars/$platform" ..
-  mv ../linux64 ../win32 ../win64 ../macosx jars/
+  move_file "$launcher" "$track-launchers"
 done
+
+mkdir -p "$fiji_dir/java"
+
+for platform in $platforms; do
+  notify "Staging $platform"
+
+  # Move matching platform-specific files back into place.
+  move_file "$track-jars/$platform/" "$fiji_dir/jars"
+  move_file "$track-lib/$platform/" "$fiji_dir/lib"
+  case "$platform" in
+    macos*)
+      move_file "$track-jars/macosx/" "$fiji_dir/jars"
+      move_file "$track-lib/macosx/" "$fiji_dir/lib"
+      ;;
+  esac
+  for launcher in $(launchers "$track" "$platform"); do
+    subDir=${launcher%/*}
+    srcFile=${launcher##*/}
+    test "$launcher" != "$subDir" || subDir=
+    move_file "$track-launchers/$srcFile" "$fiji_dir/$subDir"
+  done
+
+  # Move matching platform-specific Java bundle into place.
+  javaDir=$(java_dir "$track" "$platform")
+  for jtype in jdk jre; do 
+    notify "Generating $platform $jtype archive"
+    # Shuffle in the correct Java bundle before archiving.
+    (set -x; mv "$jtype-$track/$javaDir/" "$fiji_dir/java/")
+    # Archive the installation!
+    create_archive "$platform-$jtype"
+    # Remove the Java bundle again.
+    (set -x; mv "$fiji_dir/java/$javaDir/" "$jtype-$track/")
+  done
+
+  # Remove platform-specific files again.
+  notify "Unstaging $platform"
+  move_dir_aside jars
+  move_dir_aside lib
+  for launcher in $(launchers "$track" "$platform"); do
+    move_file "$fiji_dir/$launcher" "$track-launchers"
+  done
+done
+
+# Clean up.
+mv "$track-launchers"/jaunch* "$fiji_dir/config/jaunch/"
+mv "$track-launchers"/* "$fiji_dir/"
+mv "$track-jars"/* "$fiji_dir/jars/"
+mv "$track-lib"/* "$fiji_dir/lib/"
+rmdir "$fiji_dir/java/" "$track-launchers" "$track-jars" "$track-lib"

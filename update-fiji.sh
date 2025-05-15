@@ -1,16 +1,27 @@
 #!/bin/sh
 
-FIJI_HOME=$1
-test "$FIJI_HOME" || { echo '[ERROR] Please specify folder for Fiji.app.' && exit 1; }
+. "${0%/*}/common.include"
 
-case "$(uname -s),$(uname -m)" in
-  Linux,x86_64) launcher=ImageJ-linux64 ;;
-  Linux,*) launcher=ImageJ-linux32 ;;
-  Darwin,*) launcher=Contents/MacOS/ImageJ-macosx ;;
-  MING*,*) launcher=ImageJ-win32.exe ;;
-  MSYS_NT*,*) launcher=ImageJ-win32.exe ;;
-  *) echo '[ERROR] Unknown platform' && exit 2 ;;
+case "$(uname)" in
+  MING*|MSYS*) launcher=fiji.bat ;;
+  *) launcher=fiji ;;
 esac
-DEBUG=1 "$FIJI_HOME/$launcher" --update add-update-site Fiji https://update.fiji.sc/
-DEBUG=1 "$FIJI_HOME/$launcher" --update add-update-site Java-8 https://sites.imagej.net/Java-8/
-DEBUG=1 "$FIJI_HOME/$launcher" --update update-force-pristine
+
+# Invoke the command-line Updater.
+if [ -d "$JAVA_HOME" ]; then
+  DEBUG=1 "$fiji_dir/$launcher" --java-home "$JAVA_HOME" --update update-force-pristine
+else
+  DEBUG=1 "$fiji_dir/$launcher" --update update-force-pristine
+fi
+
+# Remove obsolete fiji launcher wrappers.
+rm -rf \
+  "$fiji_dir/Contents/MacOS/fiji-macosx" \
+  "$fiji_dir/Contents/MacOS/fiji-tiger" \
+  "$fiji_dir/fiji-linux64" \
+  "$fiji_dir/fiji-win32.exe" \
+  "$fiji_dir/fiji-win64.exe"
+
+# Remove any backup launcher-related files.
+find . -name '*.old' -exec rm -rf "{}" \;
+find . -name '*.old.exe' -exec rm -rf "{}" \;
