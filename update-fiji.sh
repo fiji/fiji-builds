@@ -42,4 +42,5 @@ rm -rf \
 
 # Remove any backup launcher-related files.
 find . -name '*.old' -exec rm -rf "{}" \;
+find . -name '*.old.app' -exec rm -rf "{}" \; || true
 find . -name '*.old.exe' -exec rm -rf "{}" \;
