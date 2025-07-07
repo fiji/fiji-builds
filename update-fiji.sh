@@ -14,8 +14,8 @@ esac
 
 arch=$(uname -m)
 case "$arch" in
-  aarch64) arch=arm64 ;;
-  amd64)   arch=x64   ;;
+  aarch64)      arch=arm64 ;;
+  amd64|x86_64) arch=x64   ;;
 esac
 
 # Use JDK matching the current track.
