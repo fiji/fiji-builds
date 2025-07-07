@@ -26,11 +26,10 @@ esac
 
 cd "$(dirname "$0")"
 
+die() { >&2 echo "[ERROR] $1"; exit 1; }
+
 verify_fiji_dir() {
-  test -d "$fiji_dir" || {
-    echo "[ERROR] Fiji folder '$fiji_dir' does not exist."
-    exit 1
-  }
+  test -d "$fiji_dir" || die "Fiji folder '$fiji_dir' does not exist."
 }
 
 long_platform() {
