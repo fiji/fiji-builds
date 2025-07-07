@@ -29,10 +29,6 @@ echo
 echo '== Downloading Java bundles =='
 ./download-javas.sh "$track" || exit 2
 
-# Use JDK matching the current track.
-export JAVA_HOME=$(find "jdk-$track/linux64" \
-  -mindepth 1 -maxdepth 1 -type d | head -n1)
-
 # Update the Fiji installation.
 echo
 echo '== Updating the Fiji installation =='

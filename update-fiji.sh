@@ -2,10 +2,28 @@
 
 . "${0%/*}/common.include"
 
+# Glean the current platform.
+
+os=$(uname)
 case "$(uname)" in
-  MING*|MSYS*) launcher=fiji.bat ;;
-  *) launcher=fiji ;;
+  MING*|MSYS*) os=windows ; launcher=fiji.bat ;;
+  Darwin)      os=macos   ; launcher=fiji     ;;
+  Linux)       os=linux   ; launcher=fiji     ;;
+  *) die "Unsupported platform: $(uname)"
 esac
+
+arch=$(uname -m)
+case "$arch" in
+  aarch64) arch=arm64 ;;
+  amd64)   arch=x64   ;;
+esac
+
+# Use JDK matching the current track.
+java_base="jdk-$track/$(java_dir "$track" "$os-$arch")"
+java_home=$(find "$java_base" -mindepth 1 -maxdepth 1 -type d | head -n1)
+test -d "$java_home" || die "No Java found beneath $java_base"
+export JAVA_HOME=$java_home
+echo "--> Using JAVA_HOME $JAVA_HOME"
 
 # Invoke the command-line Updater.
 if [ -d "$JAVA_HOME" ]; then
