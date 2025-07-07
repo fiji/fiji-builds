@@ -60,9 +60,17 @@ for platform in $platforms; do
   move_file "$track-jars/$platform/" "$fiji_dir/jars"
   move_file "$track-lib/$platform/" "$fiji_dir/lib"
   case "$platform" in
+    linux*)
+      move_file "$track-jars/linuxx/" "$fiji_dir/jars"
+      move_file "$track-lib/linuxx/" "$fiji_dir/lib"
+      ;;
     macos*)
       move_file "$track-jars/macosx/" "$fiji_dir/jars"
       move_file "$track-lib/macosx/" "$fiji_dir/lib"
+      ;;
+    win*)
+      move_file "$track-jars/winx/" "$fiji_dir/jars"
+      move_file "$track-lib/winx/" "$fiji_dir/lib"
       ;;
   esac
   for launcher in $(launchers "$track" "$platform"); do
