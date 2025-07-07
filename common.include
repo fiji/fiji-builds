@@ -9,7 +9,7 @@ set -e
 track="$1"
 case "$track" in
   latest)
-    platforms='linux-arm64 linux64 macos-arm64 macos64 win64'
+    platforms='linux-arm64 linux64 macos-arm64 macos64 win-arm64 win64'
     fiji_nojava=fiji-latest-portable-nojava
     fiji_dir=Fiji
     ;;
@@ -100,8 +100,15 @@ DOC
   case "$track:$short" in
     latest:macos*) echo 'Fiji.app' ;;
     stable:macos*) echo 'Contents Fiji.app' ;;
+
+    # Note: Windows arm64 requires jaunch-windows-x64 configurator,
+    # because KMP does not support arm64, so the native launcher invokes
+    # the x64 configurator via Windows arm64's x64 compatibility layer.
+    latest:win-arm64) echo "fiji-$long.exe config/jaunch/jaunch-windows-x64.exe" ;;
+
     latest:win*) echo "fiji-$long.exe config/jaunch/jaunch-$long.exe" ;;
     stable:win*) echo "fiji-$long.exe config/jaunch/jaunch-$long.exe ImageJ-$short.exe" ;;
+
     latest:*) echo "fiji-$long config/jaunch/jaunch-$long" ;;
     stable:*) echo "fiji-$long config/jaunch/jaunch-$long ImageJ-$short" ;;
   esac
