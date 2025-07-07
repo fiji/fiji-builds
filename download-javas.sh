@@ -4,13 +4,13 @@
 
 # Download the manifests of current JDK/JRE locations.
 echo "--> Downloading bundled JDK/JRE manifests"
-jdks=$(curl -fsO "https://downloads.imagej.net/java/jdk-$track.txt")
-jres=$(curl -fsO "https://downloads.imagej.net/java/jre-$track.txt")
+curl -fsO "https://downloads.imagej.net/java/jdk-$track.txt"
+#curl -fsO "https://downloads.imagej.net/java/jre-$track.txt"
 
 # Download bundled Java for each platform + bundle type (JDK or JRE).
 for platform in $platforms; do
   javaDir="$(java_dir "$track" "$platform")"
-  for jtype in jdk jre; do
+  for jtype in jdk; do
     javaBundle="$jtype-$track"
     targetDir="$javaBundle/$javaDir"
     if [ -e "$targetDir" ]

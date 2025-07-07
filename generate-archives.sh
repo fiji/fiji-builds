@@ -74,7 +74,7 @@ for platform in $platforms; do
 
   # Move matching platform-specific Java bundle into place.
   javaDir=$(java_dir "$track" "$platform")
-  for jtype in jdk jre; do 
+  for jtype in jdk; do
     notify "Generating $platform $jtype archive"
     # Shuffle in the correct Java bundle before archiving.
     (set -x; mv "$jtype-$track/$javaDir/" "$fiji_dir/java/")
