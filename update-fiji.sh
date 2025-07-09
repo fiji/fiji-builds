@@ -21,9 +21,13 @@ esac
 # Use JDK matching the current track.
 java_base="jdk-$track/$(java_dir "$track" "$os-$arch")"
 java_home=$(find "$java_base" -mindepth 1 -maxdepth 1 -type d | head -n1)
-test -d "$java_home" || die "No Java found beneath $java_base"
-export JAVA_HOME=$java_home
-echo "--> Using JAVA_HOME $JAVA_HOME"
+if [ -d "$java_home" ]
+then
+  export JAVA_HOME=$java_home
+  echo "--> Using JAVA_HOME $JAVA_HOME"
+else
+  >&2 echo "[WARNING] No Java found beneath $java_base; relying on system Java."
+fi
 
 # Invoke the command-line Updater.
 if [ -d "$JAVA_HOME" ]; then
