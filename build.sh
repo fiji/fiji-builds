@@ -14,7 +14,7 @@ echo '== Checking whether anything has changed =='
 
 if [ "$(./fiji-archive-status.sh "$track")" = 'up-to-date' ]; then
   echo 'Nothing has changed. No distros will be generated.'
-  exit 0
+  continue
 fi
 
 # Initialize the Fiji installation if needed.
