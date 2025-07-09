@@ -2,7 +2,14 @@
 
 set -e
 
+cd "$(dirname "$0")"
+
 for track in latest stable; do
+
+case "$track" in
+  latest) fiji_dir=Fiji ;;
+  stable) fiji_dir=Fiji.app ;;
+esac
 
 echo
 echo '/-----------------\'
