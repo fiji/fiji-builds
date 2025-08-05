@@ -48,3 +48,6 @@ rm -rf \
 find . -name '*.old' -exec rm -rf "{}" \;
 find . -name '*.old.app' -exec rm -rf "{}" \; || true
 find . -name '*.old.exe' -exec rm -rf "{}" \;
+
+# Remove rogue executable bit from non-executable JAR files.
+find . -name '*.jar' -exec chmod -x "{}" \;
