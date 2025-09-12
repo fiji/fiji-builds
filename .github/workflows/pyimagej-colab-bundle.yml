@@ -62,6 +62,37 @@ jobs:
           echo "BUNDLE_NAME=pyimagej-colab-${DATE}.tar.gz" >> $GITHUB_ENV
           echo "RELEASE_TAG=pyimagej-colab-${DATE}" >> $GITHUB_ENV
           
+      - name: Cleanup intermediate releases
+        if: steps.check_fiji.outputs.fiji_changed == 'true'
+        run: |
+          # Keep: latest (just created) + releases older than 6 months
+          # Delete: intermediate releases within the last 6 months
+          CUTOFF_DATE=$(date -d '6 months ago' +%Y%m%d)
+          
+          # Get all pyimagej-colab releases, newest first
+          gh release list --limit 100 --json tagName,createdAt | \
+          jq -r '.[] | select(.tagName | startswith("pyimagej-colab-")) | .tagName' | \
+          while read tag; do
+            # Extract date from tag (pyimagej-colab-YYYYMMDD)
+            release_date=${tag#pyimagej-colab-}
+            
+            # Skip if it's the release we just created
+            if [ "$release_date" = "$(date +%Y%m%d)" ]; then
+              echo "Keeping latest release: $tag"
+              continue
+            fi
+            
+            # Keep if older than 6 months
+            if [ "$release_date" -lt "$CUTOFF_DATE" ]; then
+              echo "Keeping old stable release: $tag"
+            else
+              echo "Deleting intermediate release: $tag"
+              gh release delete "$tag" --yes || true
+            fi
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: Create Release
         if: steps.check_fiji.outputs.fiji_changed == 'true'
         uses: softprops/action-gh-release@v1
