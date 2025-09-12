@@ -42,6 +42,7 @@ We use GitHub "releases" (not actual software releases) as a distribution mechan
 Perfect for Google Colab, air-gapped environments, or any situation where internet access is limited:
 
 ```python
+%%capture pyimagej_setup
 import os
 
 # Only download if bundle doesn't exist
@@ -97,6 +98,11 @@ except Exception as e:
     print(f"Reinitializing PyImageJ (previous state: {e})")
     ij = imagej.init('./Fiji', mode='headless')
     print(f"PyImageJ initialized with ImageJ {ij.getVersion()}")
+
+print("✅ PyImageJ is ready to use! The 'ij' variable contains your ImageJ instance.")
+
+# If anything went wrong, you can inspect the setup output:
+# pyimagej_setup.show()  # Shows all setup steps and any errors
 ```
 
 ### Available Bundles
