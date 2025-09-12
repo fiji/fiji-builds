@@ -1,0 +1,78 @@
+name: pyimagej-colab-bundle
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # Weekly on Monday at 6 AM UTC
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  build-pyimagej-bundle:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check if Fiji needs updating
+        id: check_fiji
+        run: |
+          if [ "$(./fiji-archive-status.sh latest)" = 'up-to-date' ]; then
+            echo "fiji_changed=false" >> $GITHUB_OUTPUT
+            echo "Fiji is up-to-date. No new bundle needed."
+          else
+            echo "fiji_changed=true" >> $GITHUB_OUTPUT
+            echo "Fiji has updates. Will build new PyImageJ bundle."
+          fi
+      
+      - name: Set up Python
+        if: steps.check_fiji.outputs.fiji_changed == 'true'
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      
+      - name: Build Fiji installation
+        if: steps.check_fiji.outputs.fiji_changed == 'true'
+        run: |
+          ./bootstrap-fiji.sh latest
+          ./download-javas.sh latest
+          ./update-fiji.sh latest
+          
+      - name: Install PyImageJ and populate caches
+        if: steps.check_fiji.outputs.fiji_changed == 'true'
+        run: |
+          pip install pyimagej
+          # Use the downloaded Java 21 from download-javas.sh
+          JAVA_HOME=$(find $(pwd)/jdk-latest/linux64 -name "*jdk*" -type d | head -1)
+          export JAVA_HOME
+          echo "Using JAVA_HOME: $JAVA_HOME"
+          python -c "
+          import imagej
+          ij = imagej.init('./Fiji')
+          print(f'Initialized ImageJ version: {ij.getVersion()}')
+          "
+          
+      - name: Create bundle
+        if: steps.check_fiji.outputs.fiji_changed == 'true'
+        run: |
+          DATE=$(date +%Y%m%d)
+          tar -czf pyimagej-colab-${DATE}.tar.gz \
+            Fiji/ \
+            jdk-latest/ \
+            ~/.jgo/ \
+            ~/.m2/repository/
+          echo "BUNDLE_NAME=pyimagej-colab-${DATE}.tar.gz" >> $GITHUB_ENV
+          echo "RELEASE_TAG=pyimagej-colab-${DATE}" >> $GITHUB_ENV
+          
+      - name: Create Release
+        if: steps.check_fiji.outputs.fiji_changed == 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.BUNDLE_NAME }}
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: PyImageJ Colab Bundle ${{ env.RELEASE_TAG }}
+          body: |
+            Pre-built PyImageJ bundle for Google Colab
+            - Fiji build from latest
+            - Pre-populated .jgo and .m2 caches
+            - Ready for headless PyImageJ initialization
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
