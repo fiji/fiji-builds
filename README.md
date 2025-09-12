@@ -1,4 +1,7 @@
 [![](https://github.com/fiji/fiji-builds/actions/workflows/build.yml/badge.svg)](https://github.com/fiji/fiji-builds/actions/workflows/build.yml)
+[![](https://github.com/fiji/fiji-builds/actions/workflows/pyimagej-bundle.yml/badge.svg)](https://github.com/fiji/fiji-builds/actions/workflows/pyimagej-bundle.yml)
+
+## Fiji Bundles
 
 This repository creates the Fiji downloadable bundles available from:
 
@@ -6,3 +9,61 @@ This repository creates the Fiji downloadable bundles available from:
 * https://downloads.imagej.net/fiji/stable/
 * https://downloads.imagej.net/fiji/archive/latest/
 * https://downloads.imagej.net/fiji/archive/stable/
+
+## PyImageJ Bundles
+
+This repository also builds **PyImageJ bundles** - complete, self-contained packages that include Fiji, Java runtime, and all cached dependencies needed for PyImageJ initialization. These bundles enable PyImageJ usage in environments with restricted internet access or where downloading from LOCI servers is problematic.
+
+### What's in a PyImageJ Bundle
+
+Each bundle (`pyimagej-YYYYMMDD.tar.gz`) contains:
+- **Fiji installation** (latest build)
+- **Java 21 runtime** (Zulu JDK, linux64)
+- **Pre-populated .jgo cache** (Java dependency management)
+- **Pre-populated .m2 repository** (Maven dependencies)
+
+### How PyImageJ Bundles are Created
+
+1. **Automatic builds**: Weekly checks (Mondays 6 AM UTC) compare the latest Fiji bundle timestamp with our most recent PyImageJ bundle
+2. **Smart building**: Only builds when Fiji has been updated (avoids unnecessary rebuilds)
+3. **Manual builds**: Can be triggered on-demand with a "force build" option
+4. **Retention policy**: Keeps latest bundle + bundles older than 6 months (deletes intermediate versions)
+
+### Why Use GitHub Releases
+
+We use GitHub "releases" (not actual software releases) as a distribution mechanism because:
+- **File hosting**: GitHub provides reliable, fast downloads for large bundles (~500MB-1GB)
+- **Version management**: Date-based tags make it easy to reference specific bundles
+- **No bandwidth limits**: Unlike repository storage, release assets have no download restrictions
+- **LOCI server independence**: Eliminates dependency on LOCI infrastructure that may block certain IPs
+
+### How to Use PyImageJ Bundles
+
+Perfect for Google Colab, air-gapped environments, or any situation where internet access is limited:
+
+```python
+# Download and extract bundle
+!wget https://github.com/fiji/fiji-builds/releases/latest/download/pyimagej-20250912.tar.gz
+!tar -xzf pyimagej-20250912.tar.gz
+
+# Set up Java environment  
+import os
+java_home = !find ./jdk-latest/linux64 -name "*jdk*" -type d
+os.environ['JAVA_HOME'] = java_home[0]
+
+# Move caches to expected locations
+!cp -r .jgo ~/
+!cp -r .m2 ~/
+
+# Initialize PyImageJ (no downloads needed!)
+import imagej
+ij = imagej.init('./Fiji', mode='headless')
+```
+
+### Available Bundles
+
+Browse and download bundles from: https://github.com/fiji/fiji-builds/releases
+
+- Latest bundle: Always contains the most recent Fiji build
+- Stable bundles: Long-term releases (6+ months old) for reproducible environments
+- Date-based naming: `pyimagej-YYYYMMDD` format for easy identification
