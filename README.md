@@ -42,22 +42,50 @@ We use GitHub "releases" (not actual software releases) as a distribution mechan
 Perfect for Google Colab, air-gapped environments, or any situation where internet access is limited:
 
 ```python
-# Download and extract bundle
-!wget https://github.com/fiji/fiji-builds/releases/latest/download/pyimagej-20250912.tar.gz
-!tar -xzf pyimagej-20250912.tar.gz
-
-# Set up Java environment  
 import os
-java_home = !find ./jdk-latest/linux64 -name "*jdk*" -type d
-os.environ['JAVA_HOME'] = java_home[0]
 
-# Move caches to expected locations
-!cp -r .jgo ~/
-!cp -r .m2 ~/
+# Only download if bundle doesn't exist
+bundle_name = "pyimagej-20250912.tar.gz"
+if not os.path.exists(bundle_name):
+    print("Downloading PyImageJ bundle...")
+    !wget https://github.com/fiji/fiji-builds/releases/latest/download/{bundle_name}
+else:
+    print("Bundle already exists, skipping download.")
+
+# Only extract if Fiji directory doesn't exist
+if not os.path.exists("Fiji"):
+    print("Extracting bundle...")
+    !tar -xzf {bundle_name}
+else:
+    print("Bundle already extracted, skipping extraction.")
+
+# Set up Java environment
+if "JAVA_HOME" not in os.environ:
+    java_home = !find ./jdk-latest/linux64 -name "*jdk*" -type d
+    os.environ['JAVA_HOME'] = java_home[0]
+    print(f"Set JAVA_HOME to: {os.environ['JAVA_HOME']}")
+
+# Set up caches via symlinks (only if they don't exist)
+if not os.path.exists(os.path.expanduser("~/.jgo")):
+    !ln -s $(pwd)/.jgo ~/.jgo
+    print("Linked .jgo cache")
+
+if not os.path.exists(os.path.expanduser("~/.m2")):
+    !ln -s $(pwd)/.m2 ~/.m2
+    print("Linked .m2 cache")
+
+# Install PyImageJ if not already installed
+try:
+    import imagej
+    print("PyImageJ already installed")
+except ImportError:
+    print("Installing PyImageJ...")
+    !pip install pyimagej
+    import imagej
 
 # Initialize PyImageJ (no downloads needed!)
-import imagej
 ij = imagej.init('./Fiji', mode='headless')
+print(f"PyImageJ initialized with ImageJ {ij.getVersion()}")
 ```
 
 ### Available Bundles
