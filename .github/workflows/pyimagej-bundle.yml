@@ -1,4 +1,4 @@
-name: pyimagej-colab-bundle
+name: pyimagej-bundle
 
 on:
   schedule:
@@ -33,7 +33,7 @@ jobs:
             echo "Latest Fiji bundle: $fiji_time ($fiji_timestamp)"
 
             # Get our latest PyImageJ bundle release time (if any exists)
-            latest_release=$(gh release list --limit 1 --json tagName,createdAt | jq -r '.[] | select(.tagName | startswith("pyimagej-colab-")) | .createdAt' || echo "")
+            latest_release=$(gh release list --limit 1 --json tagName,createdAt | jq -r '.[] | select(.tagName | startswith("pyimagej-")) | .createdAt' || echo "")
 
             if [ -z "$latest_release" ]; then
               echo "No existing PyImageJ bundle found. Will build new bundle."
@@ -85,13 +85,13 @@ jobs:
         if: steps.check_fiji.outputs.fiji_changed == 'true'
         run: |
           DATE=$(date +%Y%m%d)
-          tar -czf pyimagej-colab-${DATE}.tar.gz \
+          tar -czf pyimagej-${DATE}.tar.gz \
             Fiji/ \
             jdk-latest/ \
             ~/.jgo/ \
             ~/.m2/repository/
-          echo "BUNDLE_NAME=pyimagej-colab-${DATE}.tar.gz" >> $GITHUB_ENV
-          echo "RELEASE_TAG=pyimagej-colab-${DATE}" >> $GITHUB_ENV
+          echo "BUNDLE_NAME=pyimagej-${DATE}.tar.gz" >> $GITHUB_ENV
+          echo "RELEASE_TAG=pyimagej-${DATE}" >> $GITHUB_ENV
           
       - name: Cleanup intermediate releases
         if: steps.check_fiji.outputs.fiji_changed == 'true'
@@ -100,12 +100,12 @@ jobs:
           # Delete: intermediate releases within the last 6 months
           CUTOFF_DATE=$(date -d '6 months ago' +%Y%m%d)
           
-          # Get all pyimagej-colab releases, newest first
+          # Get all pyimagej releases, newest first
           gh release list --limit 100 --json tagName,createdAt | \
-          jq -r '.[] | select(.tagName | startswith("pyimagej-colab-")) | .tagName' | \
+          jq -r '.[] | select(.tagName | startswith("pyimagej-")) | .tagName' | \
           while read tag; do
-            # Extract date from tag (pyimagej-colab-YYYYMMDD)
-            release_date=${tag#pyimagej-colab-}
+            # Extract date from tag (pyimagej-YYYYMMDD)
+            release_date=${tag#pyimagej-}
             
             # Skip if it's the release we just created
             if [ "$release_date" = "$(date +%Y%m%d)" ]; then
@@ -132,9 +132,11 @@ jobs:
           tag_name: ${{ env.RELEASE_TAG }}
           name: ${{ env.RELEASE_TAG }}
           body: |
-            Pre-built PyImageJ bundle for Google Colab
+            Pre-built PyImageJ bundle with Fiji and all dependencies
             - Fiji build from latest
+            - Java 21 runtime included  
             - Pre-populated .jgo and .m2 caches
-            - Ready for headless PyImageJ initialization
+            - Ready for offline PyImageJ initialization
+            - Ideal for environments with restricted internet access
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
