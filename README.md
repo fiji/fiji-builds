@@ -83,9 +83,20 @@ except ImportError:
     !pip install pyimagej
     import imagej
 
-# Initialize PyImageJ (no downloads needed!)
-ij = imagej.init('./Fiji', mode='headless')
-print(f"PyImageJ initialized with ImageJ {ij.getVersion()}")
+# Initialize PyImageJ (no further downloads needed!)
+try:
+    # Check if ImageJ is already initialized
+    ij.getVersion()
+    print(f"PyImageJ already initialized with ImageJ {ij.getVersion()}")
+except NameError:
+    # ij variable doesn't exist, safe to initialize
+    ij = imagej.init('./Fiji', mode='headless')
+    print(f"PyImageJ initialized with ImageJ {ij.getVersion()}")
+except Exception as e:
+    # ij exists but might be in bad state, reinitialize
+    print(f"Reinitializing PyImageJ (previous state: {e})")
+    ij = imagej.init('./Fiji', mode='headless')
+    print(f"PyImageJ initialized with ImageJ {ij.getVersion()}")
 ```
 
 ### Available Bundles
