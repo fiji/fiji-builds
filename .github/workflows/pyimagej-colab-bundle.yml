@@ -24,13 +24,35 @@ jobs:
           if [ "${{ inputs.force_build }}" = "true" ]; then
             echo "fiji_changed=true" >> $GITHUB_OUTPUT
             echo "Force build requested. Will build new PyImageJ bundle."
-          elif [ "$(./fiji-archive-status.sh latest)" = 'up-to-date' ]; then
-            echo "fiji_changed=false" >> $GITHUB_OUTPUT
-            echo "Fiji is up-to-date. No new bundle needed."
           else
-            echo "fiji_changed=true" >> $GITHUB_OUTPUT
-            echo "Fiji has updates. Will build new PyImageJ bundle."
+            # Check if latest Fiji bundle is newer than our latest PyImageJ bundle
+
+            # Get latest Fiji bundle modification time
+            fiji_time=$(curl -Ifs "https://downloads.imagej.net/fiji/latest/fiji-latest-portable-nojava.zip" | grep '^Last-Modified:' | sed 's/Last-Modified: //')
+            fiji_timestamp=$(date --date="$fiji_time" '+%s')
+            echo "Latest Fiji bundle: $fiji_time ($fiji_timestamp)"
+
+            # Get our latest PyImageJ bundle release time (if any exists)
+            latest_release=$(gh release list --limit 1 --json tagName,createdAt | jq -r '.[] | select(.tagName | startswith("pyimagej-colab-")) | .createdAt' || echo "")
+
+            if [ -z "$latest_release" ]; then
+              echo "No existing PyImageJ bundle found. Will build new bundle."
+              echo "fiji_changed=true" >> $GITHUB_OUTPUT
+            else
+              pyimagej_timestamp=$(date --date="$latest_release" '+%s')
+              echo "Latest PyImageJ bundle: $latest_release ($pyimagej_timestamp)"
+
+              if [ "$fiji_timestamp" -gt "$pyimagej_timestamp" ]; then
+                echo "Fiji bundle is newer than PyImageJ bundle. Will build new bundle."
+                echo "fiji_changed=true" >> $GITHUB_OUTPUT
+              else
+                echo "PyImageJ bundle is up-to-date. No new bundle needed."
+                echo "fiji_changed=false" >> $GITHUB_OUTPUT
+              fi
+            fi
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Set up Python
         if: steps.check_fiji.outputs.fiji_changed == 'true'
