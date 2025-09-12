@@ -85,11 +85,14 @@ jobs:
         if: steps.check_fiji.outputs.fiji_changed == 'true'
         run: |
           DATE=$(date +%Y%m%d)
+          # Copy caches to current directory for bundling
+          cp -r ~/.jgo .jgo
+          cp -r ~/.m2 .m2
           tar -czf pyimagej-${DATE}.tar.gz \
             Fiji/ \
             jdk-latest/ \
-            ~/.jgo/ \
-            ~/.m2/repository/
+            .jgo/ \
+            .m2/
           echo "BUNDLE_NAME=pyimagej-${DATE}.tar.gz" >> $GITHUB_ENV
           echo "RELEASE_TAG=pyimagej-${DATE}" >> $GITHUB_ENV
           
