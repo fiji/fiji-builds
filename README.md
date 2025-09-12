@@ -66,14 +66,25 @@ if "JAVA_HOME" not in os.environ:
     os.environ['JAVA_HOME'] = java_home[0]
     print(f"Set JAVA_HOME to: {os.environ['JAVA_HOME']}")
 
-# Set up caches via symlinks (only if they don't exist)
-if not os.path.exists(os.path.expanduser("~/.jgo")):
-    !ln -s $(pwd)/.jgo ~/.jgo
-    print("Linked .jgo cache")
+# Set up caches by merging bundle contents with existing local caches
+if os.path.exists(".jgo") or os.path.exists(".m2"):
+    print("Merging bundle caches with local caches...")
 
-if not os.path.exists(os.path.expanduser("~/.m2")):
-    !ln -s $(pwd)/.m2 ~/.m2
-    print("Linked .m2 cache")
+    # Merge .jgo cache (create target directory if needed)
+    if os.path.exists(".jgo"):
+        !mkdir -p ~/.jgo
+        !cp -r .jgo/* ~/.jgo/ || true
+        !rm -rf .jgo
+        print("Merged .jgo cache")
+
+    # Merge .m2 cache (create target directory if needed)
+    if os.path.exists(".m2"):
+        !mkdir -p ~/.m2
+        !cp -r .m2/* ~/.m2/ || true
+        !rm -rf .m2
+        print("Merged .m2 cache")
+else:
+    print("Bundle caches already processed")
 
 # Install PyImageJ if not already installed
 try:
