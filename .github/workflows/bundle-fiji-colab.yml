@@ -39,10 +39,10 @@ jobs:
               echo "No existing Fiji Colab bundle found. Will build new bundle."
               echo "fiji_changed=true" >> $GITHUB_OUTPUT
             else
-              pyimagej_timestamp=$(date --date="$latest_release" '+%s')
-              echo "Latest Fiji Colab bundle: $latest_release ($pyimagej_timestamp)"
+              colab_bundle_date=$(date --date="$latest_release" '+%s')
+              echo "Latest Fiji Colab bundle: $latest_release ($colab_bundle_date)"
 
-              if [ "$fiji_timestamp" -gt "$pyimagej_timestamp" ]; then
+              if [ "$fiji_timestamp" -gt "$colab_bundle_date" ]; then
                 echo "Fiji bundle is newer than Fiji Colab bundle. Will build new bundle."
                 echo "fiji_changed=true" >> $GITHUB_OUTPUT
               else
