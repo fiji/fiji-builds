@@ -14,10 +14,10 @@ on:
 jobs:
   build-pyimagej-bundle:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Check if Fiji needs updating
         id: check_fiji
         run: |
@@ -53,20 +53,20 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Set up Python
         if: steps.check_fiji.outputs.fiji_changed == 'true'
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
-      
+
       - name: Build Fiji installation
         if: steps.check_fiji.outputs.fiji_changed == 'true'
         run: |
           ./bootstrap-fiji.sh latest
           ./download-javas.sh latest
           ./update-fiji.sh latest
-          
+
       - name: Install PyImageJ and populate caches
         if: steps.check_fiji.outputs.fiji_changed == 'true'
         run: |
@@ -80,7 +80,55 @@ jobs:
           ij = imagej.init('./Fiji')
           print(f'Initialized ImageJ version: {ij.getVersion()}')
           "
-          
+
+      - name: Cleanup intermediate releases
+        if: steps.check_fiji.outputs.fiji_changed == 'true'
+        run: |
+          # Get all pyimagej releases, newest first
+          releases=$(gh release list --limit 100 --json tagName,createdAt | \
+            jq -r '.[] | select(.tagName | startswith("pyimagej-")) | .tagName' | \
+            sort -r)
+
+          # Convert to array
+          release_array=($releases)
+
+          if [ ${#release_array[@]} -eq 0 ]; then
+            echo "No existing releases found."
+          elif [ ${#release_array[@]} -eq 1 ]; then
+            echo "Only one release exists (${release_array[0]}). No cleanup needed."
+          else
+            # Most recent tag is first, second most recent is next
+            most_recent="${release_array[0]}"
+            second_most_recent="${release_array[1]}"
+
+            echo "Most recent tag: $most_recent"
+            echo "Second most recent tag: $second_most_recent"
+
+            # Extract dates
+            most_recent_date=${most_recent#pyimagej-}
+            second_most_recent_date=${second_most_recent#pyimagej-}
+
+            # Calculate 6 months ago from most recent
+            cutoff_timestamp=$(date -d "${most_recent_date:0:4}-${most_recent_date:4:2}-${most_recent_date:6:2} - 6 months" +%s)
+            second_timestamp=$(date -d "${second_most_recent_date:0:4}-${second_most_recent_date:4:2}-${second_most_recent_date:6:2}" +%s)
+
+            echo "Cutoff timestamp: $cutoff_timestamp"
+            echo "Second most recent timestamp: $second_timestamp"
+
+            # If second most recent is within 6 months, delete the most recent
+            if [ "$second_timestamp" -ge "$cutoff_timestamp" ]; then
+              echo "Second most recent tag ($second_most_recent) is within 6 months of most recent ($most_recent)."
+              echo "Deleting most recent release and tag: $most_recent"
+              # Delete both the release (with assets) and the tag
+              gh release delete "$most_recent" --yes --cleanup-tag || echo "Failed to delete release, continuing..."
+            else
+              echo "Second most recent tag ($second_most_recent) is older than 6 months."
+              echo "Keeping most recent tag: $most_recent"
+            fi
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create bundle
         if: steps.check_fiji.outputs.fiji_changed == 'true'
         run: |
@@ -95,38 +143,7 @@ jobs:
             .m2/
           echo "BUNDLE_NAME=pyimagej-${DATE}.tar.gz" >> $GITHUB_ENV
           echo "RELEASE_TAG=pyimagej-${DATE}" >> $GITHUB_ENV
-          
-      - name: Cleanup intermediate releases
-        if: steps.check_fiji.outputs.fiji_changed == 'true'
-        run: |
-          # Keep: latest (just created) + releases older than 6 months
-          # Delete: intermediate releases within the last 6 months
-          CUTOFF_DATE=$(date -d '6 months ago' +%Y%m%d)
-          
-          # Get all pyimagej releases, newest first
-          gh release list --limit 100 --json tagName,createdAt | \
-          jq -r '.[] | select(.tagName | startswith("pyimagej-")) | .tagName' | \
-          while read tag; do
-            # Extract date from tag (pyimagej-YYYYMMDD)
-            release_date=${tag#pyimagej-}
-            
-            # Skip if it's the release we just created
-            if [ "$release_date" = "$(date +%Y%m%d)" ]; then
-              echo "Keeping latest release: $tag"
-              continue
-            fi
-            
-            # Keep if older than 6 months
-            if [ "$release_date" -lt "$CUTOFF_DATE" ]; then
-              echo "Keeping old stable release: $tag"
-            else
-              echo "Deleting intermediate release: $tag"
-              gh release delete "$tag" --yes || true
-            fi
-          done
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Create Release
         if: steps.check_fiji.outputs.fiji_changed == 'true'
         uses: softprops/action-gh-release@v1
