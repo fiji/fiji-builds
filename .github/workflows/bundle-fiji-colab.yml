@@ -1,4 +1,4 @@
-name: pyimagej-bundle
+name: fiji-py-colab
 
 on:
   schedule:
@@ -12,7 +12,7 @@ on:
         type: boolean
 
 jobs:
-  build-pyimagej-bundle:
+  build-fiji-py-colab:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,30 +23,30 @@ jobs:
         run: |
           if [ "${{ inputs.force_build }}" = "true" ]; then
             echo "fiji_changed=true" >> $GITHUB_OUTPUT
-            echo "Force build requested. Will build new PyImageJ bundle."
+            echo "Force build requested. Will build new Fiji Colab bundle."
           else
-            # Check if latest Fiji bundle is newer than our latest PyImageJ bundle
+            # Check if latest Fiji bundle is newer than our latest Fiji Colab bundle
 
             # Get latest Fiji bundle modification time
             fiji_time=$(curl -Ifs "https://downloads.imagej.net/fiji/latest/fiji-latest-portable-nojava.zip" | grep '^Last-Modified:' | sed 's/Last-Modified: //')
             fiji_timestamp=$(date --date="$fiji_time" '+%s')
             echo "Latest Fiji bundle: $fiji_time ($fiji_timestamp)"
 
-            # Get our latest PyImageJ bundle release time (if any exists)
-            latest_release=$(gh release list --limit 1 --json tagName,createdAt | jq -r '.[] | select(.tagName | startswith("pyimagej-")) | .createdAt' || echo "")
+            # Get our latest Fiji Colab bundle release time (if any exists)
+            latest_release=$(gh release list --limit 1 --json tagName,createdAt | jq -r '.[] | select(.tagName | startswith("fiji-py-colab-")) | .createdAt' || echo "")
 
             if [ -z "$latest_release" ]; then
-              echo "No existing PyImageJ bundle found. Will build new bundle."
+              echo "No existing Fiji Colab bundle found. Will build new bundle."
               echo "fiji_changed=true" >> $GITHUB_OUTPUT
             else
               pyimagej_timestamp=$(date --date="$latest_release" '+%s')
-              echo "Latest PyImageJ bundle: $latest_release ($pyimagej_timestamp)"
+              echo "Latest Fiji Colab bundle: $latest_release ($pyimagej_timestamp)"
 
               if [ "$fiji_timestamp" -gt "$pyimagej_timestamp" ]; then
-                echo "Fiji bundle is newer than PyImageJ bundle. Will build new bundle."
+                echo "Fiji bundle is newer than Fiji Colab bundle. Will build new bundle."
                 echo "fiji_changed=true" >> $GITHUB_OUTPUT
               else
-                echo "PyImageJ bundle is up-to-date. No new bundle needed."
+                echo "Fiji Colab bundle is up-to-date. No new bundle needed."
                 echo "fiji_changed=false" >> $GITHUB_OUTPUT
               fi
             fi
@@ -84,9 +84,9 @@ jobs:
       - name: Cleanup intermediate releases
         if: steps.check_fiji.outputs.fiji_changed == 'true'
         run: |
-          # Get all pyimagej releases, newest first
+          # Get all fiji-py-colab releases, newest first
           releases=$(gh release list --limit 100 --json tagName,createdAt | \
-            jq -r '.[] | select(.tagName | startswith("pyimagej-")) | .tagName' | \
+            jq -r '.[] | select(.tagName | startswith("fiji-py-colab-")) | .tagName' | \
             sort -r)
 
           # Convert to array
@@ -105,8 +105,8 @@ jobs:
             echo "Second most recent tag: $second_most_recent"
 
             # Extract dates
-            most_recent_date=${most_recent#pyimagej-}
-            second_most_recent_date=${second_most_recent#pyimagej-}
+            most_recent_date=${most_recent#fiji-py-colab-}
+            second_most_recent_date=${second_most_recent#fiji-py-colab-}
 
             # Calculate 6 months ago from most recent
             cutoff_timestamp=$(date -d "${most_recent_date:0:4}-${most_recent_date:4:2}-${most_recent_date:6:2} - 6 months" +%s)
@@ -136,13 +136,13 @@ jobs:
           # Copy caches to current directory for bundling
           cp -r ~/.jgo .jgo
           cp -r ~/.m2 .m2
-          tar -czf pyimagej-${DATE}.tar.gz \
+          tar -czf fiji-py-colab-${DATE}.tar.gz \
             Fiji/ \
             jdk-latest/ \
             .jgo/ \
             .m2/
-          echo "BUNDLE_NAME=pyimagej-${DATE}.tar.gz" >> $GITHUB_ENV
-          echo "RELEASE_TAG=pyimagej-${DATE}" >> $GITHUB_ENV
+          echo "BUNDLE_NAME=fiji-py-colab-${DATE}.tar.gz" >> $GITHUB_ENV
+          echo "RELEASE_TAG=fiji-py-colab-${DATE}" >> $GITHUB_ENV
 
       - name: Create Release
         if: steps.check_fiji.outputs.fiji_changed == 'true'
@@ -152,11 +152,11 @@ jobs:
           tag_name: ${{ env.RELEASE_TAG }}
           name: ${{ env.RELEASE_TAG }}
           body: |
-            Pre-built PyImageJ bundle with Fiji and all dependencies
+            Pre-built Fiji bundle with everything needed for PyImageJ:
             - Fiji build from latest
             - Java 21 runtime included  
             - Pre-populated .jgo and .m2 caches
             - Ready for offline PyImageJ initialization
-            - Ideal for environments with restricted internet access
+            - Ideal for Google Colab and environments with restricted internet access
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
