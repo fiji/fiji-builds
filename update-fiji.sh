@@ -36,21 +36,29 @@ else
   DEBUG=1 "$fiji_dir/$launcher" --update update-force-pristine
 fi
 
+echo "--> Removing obsolete files..."
+
 # Remove obsolete fiji launcher wrappers.
-rm -rf \
+rm -rfv \
   "$fiji_dir/Contents/MacOS/fiji-macosx" \
   "$fiji_dir/Contents/MacOS/fiji-tiger" \
   "$fiji_dir/fiji-linux64" \
   "$fiji_dir/fiji-win32.exe" \
   "$fiji_dir/fiji-win64.exe"
 
-# Remove any backup launcher-related files.
-find "$fiji_dir" -name '*.old' -exec rm -rf "{}" \; || true
-find "$fiji_dir" -name '*.old.app' -exec rm -rf "{}" \; || true
-find "$fiji_dir" -name '*.old.exe' -exec rm -rf "{}" \; || true
+# Remove any other obsolete files.
+{
+  # Backup launcher-related files.
+  find "$fiji_dir" -name '*.old'
+  find "$fiji_dir" -name '*.old.app'
+  find "$fiji_dir" -name '*.old.exe'
+  # Dangling empty directories.
+  find "$fiji_dir" -type d -empty
+} | xargs rm -rfv || true
 
-# Remove any dangling empty directories.
-find "$fiji_dir" -type d -empty -exec rmdir "{}" \; || true
+echo "--> Fixing permissions..."
 
 # Remove rogue executable bit from non-executable JAR files.
-find "$fiji_dir" -name '*.jar' -exec chmod -x "{}" \;
+find "$fiji_dir" -name '*.jar' -perm /+x -exec chmod -xv "{}" \;
+
+echo "--> Done updating!"
