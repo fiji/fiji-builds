@@ -30,11 +30,18 @@ else
 fi
 
 # Invoke the command-line Updater.
+set +e
 if [ -d "$JAVA_HOME" ]; then
   DEBUG=1 "$fiji_dir/$launcher" --java-home "$JAVA_HOME" --update update-force-pristine
 else
   DEBUG=1 "$fiji_dir/$launcher" --update update-force-pristine
 fi
+# HACK: Exit code 18 is emitted on Linux due to INIT_THREADS error:
+#   Error: Could not find X11 library, not running XInitThreads.
+# But we don't care -- let's keep going in that case.
+code=$?
+test $code -eq 0 -o $code -eq 18 || exit $code
+set -e
 
 echo "--> Removing obsolete files..."
 
