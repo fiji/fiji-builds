@@ -45,9 +45,9 @@ rm -rf \
   "$fiji_dir/fiji-win64.exe"
 
 # Remove any backup launcher-related files.
-find . -name '*.old' -exec rm -rf "{}" \;
+find . -name '*.old' -exec rm -rf "{}" \; || true
 find . -name '*.old.app' -exec rm -rf "{}" \; || true
-find . -name '*.old.exe' -exec rm -rf "{}" \;
+find . -name '*.old.exe' -exec rm -rf "{}" \; || true
 
 # Remove any dangling empty directories.
 find . -type d -empty -exec rmdir "{}" \; || true
