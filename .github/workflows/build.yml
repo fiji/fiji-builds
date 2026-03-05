@@ -1,4 +1,4 @@
-name: build
+name: Build
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
@@ -19,3 +20,24 @@ jobs:
         env:
            WEBDAV_PASS: ${{ secrets.WEBDAV_PASS }}
            WEBDAV_USER: ${{ secrets.WEBDAV_USER }}
+
+  build-flatpak:
+    name: Build (Flatpak)
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Create Build Environment
+      run: cd flatpak/ && podman build -t flatpak -f ./Dockerfile .
+
+    - name: Build
+      run: podman run -t --privileged -v `pwd`:/build flatpak
+           eatmydata ./flatpak/autobuild-bundle.sh
+
+    - name: Upload bundle
+      uses: actions/upload-artifact@v2
+      with:
+        name: Flatpak Bundle
+        path: |
+          flatpak/*.flatpak
